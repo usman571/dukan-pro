@@ -1,0 +1,15 @@
+
+{
+  "model": "claude-sonnet-4-6",
+  "permissions": {
+    "allow": [
+      "Bash(bun:*)", "Bash(npm:*)", "Bash(npx:*)",
+      "Bash(git:*)", "Bash(cat:*)", "Bash(ls:*)",
+      "Bash(find:*)", "Bash(grep:*)", "Bash(echo:*)",
+      "Bash(mkdir:*)", "Bash(cp:*)", "Bash(mv:*)",
+      "Bash(touch:*)", "Bash(rm:*)", "Bash(node:*)",
+      "Bash(chmod:*)"
+    ],
+    "deny": ["Bash(rm -rf /)","Bash(sudo:*)"]
+  }
+}
