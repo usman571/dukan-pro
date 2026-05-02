@@ -40,18 +40,6 @@ export const navGroups: NavGroup[] = [
     ]
   },
   {
-    label: 'Elements',
-    items: [
-      {
-        title: 'Icons',
-        url: '/dashboard/elements/icons',
-        icon: 'palette',
-        isActive: false,
-        items: []
-      }
-    ]
-  },
-  {
     label: '',
     items: [
       {
