@@ -6,7 +6,7 @@ description: >
 tools:
   - web_search
   - web_fetch
-model: model: claude-sonnet-4-6
+model: claude-sonnet-4-6
 ---
 
 You are a research specialist for this Next.js dashboard project.

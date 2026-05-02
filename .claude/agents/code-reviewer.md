@@ -18,7 +18,6 @@ READ ONLY — you identify issues, never fix them yourself.
 ### 🔴 Critical (must fix)
 - [ ] `any` TypeScript usage
 - [ ] Direct `@tabler/icons-react` imports
-- [ ] Clerk API usage (being removed)
 - [ ] Direct `mock-api*` imports in components
 - [ ] `src/components/ui/` modified directly
 - [ ] Security issues (XSS, exposed secrets)

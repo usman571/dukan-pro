@@ -6,7 +6,7 @@ description: >
 tools:
   - read_file
   - list_files
-model: model: claude-sonnet-4-6
+model: claude-sonnet-4-6
 ---
 
 You are a senior architect for this Next.js dashboard project.
@@ -60,4 +60,3 @@ Complexity: Low / Medium / High
 - Every file must have exact path from project root
 - No ambiguity — every step executable without questions
 - Follow CLAUDE.md rules always
-- No Clerk — it is being removed

@@ -29,7 +29,6 @@ Write clean, production-quality code that follows all project conventions.
 - `'use client'` only when hooks or browser APIs needed
 - Icons only via `import { Icons } from '@/components/icons'`
 - Never modify src/components/ui/ files
-- Never use Clerk
 
 ## React Query Rules
 ```tsx

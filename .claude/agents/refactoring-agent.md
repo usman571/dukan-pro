@@ -1,6 +1,3 @@
-Create this file: .claude/agents/refactoring-agent.md
-
-With this exact content:
 
 ---
 name: refactoring-agent
@@ -26,24 +23,23 @@ Plan and execute complex refactoring tasks with zero regressions. Always underst
 ## Process (Always Follow This Order)
 
 ### Phase 1: Audit First — Touch Nothing
-Run these before any changes:
+Derive search terms from the task description (library name, import path, component names, hook names, config keys).
+Then run a broad audit:
 ```bash
-# For Clerk:
-grep -r "from '@clerk/nextjs'" src/ --include="*.tsx" --include="*.ts" -l
-grep -r "useAuth\|useUser\|useOrganization\|ClerkProvider\|Protect" src/ -l
-
-# For Sentry:
-grep -r "from '@sentry" src/ --include="*.tsx" --include="*.ts" -l
-grep -r "Sentry\." src/ --include="*.tsx" --include="*.ts" -l
-grep -r "sentry" next.config.ts instrumentation*.ts 2>/dev/null -l
+# Replace <term> with the actual library name, import path, or pattern being removed
+grep -r "from '<package-name>'" src/ --include="*.tsx" --include="*.ts" -l
+grep -r "<ComponentName>\|<hookName>\|<ConfigKey>" src/ --include="*.tsx" --include="*.ts" -l
+grep -r "<package-name>" next.config.ts *.config.ts instrumentation*.ts 2>/dev/null -l
+grep -r "<FEATURE_ENV_VAR>" .env* 2>/dev/null
 ```
+Adapt the patterns to whatever is being removed. Do not assume a fixed library.
 
 ### Phase 2: Impact Report
 Present to user BEFORE touching anything:
 - Total files affected
-- What each file uses
-- Proposed replacement
-- Execution order
+- What each file uses (imports, hooks, components, config keys)
+- Proposed replacement (or "delete with no replacement")
+- Execution order (replacements before removals)
 
 ### Phase 3: Wait for Approval
 Do NOT proceed without explicit user "yes/proceed".
@@ -55,8 +51,21 @@ Do NOT proceed without explicit user "yes/proceed".
 - If build fails — stop and report
 
 ### Phase 5: Final Cleanup
-- Remove packages: `bun remove [package]`
-- Clean .env vars
-- Verify: `grep -r "clerk\|sentry" src/` returns nothing
+- Remove packages if applicable: `bun remove <package-name>`
+- Clean relevant `.env` variables
+- Verify no traces remain:
+  ```bash
+  grep -r "<package-name>\|<SearchTerm>" src/
+  ```
+  Substitute the actual terms from the task. Should return nothing.
 
 ## Commit Format
+```
+refactor(<scope>): Remove <what> from <file>
+```
+Examples:
+```
+refactor(auth): Remove auth provider from layout.tsx
+refactor(monitoring): Remove error tracking from instrumentation.ts
+refactor(products): Remove legacy filter logic from products-table.tsx
+```

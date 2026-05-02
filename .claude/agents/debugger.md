@@ -35,9 +35,6 @@ bun run lint 2>&1
 **Icons not showing:**
 → Check using `Icons.name` from `@/components/icons` not direct tabler import
 
-**Clerk errors after removal:**
-→ Find remaining imports: `grep -r "clerk" src/`
-
 **proxy.ts not working:**
 → This project uses src/proxy.ts NOT middleware.ts
 

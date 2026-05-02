@@ -131,7 +131,6 @@ bunx shadcn add [component-name]
 
 ## Image Domains (next.config.ts)
 ```typescript
-// Remove clerk domains after Clerk removal:
-// img.clerk.com
-// clerk.com
+// next.config.ts — add external image domains here as needed
+// images: { remotePatterns: [{ hostname: 'example.com' }] }
 ```
