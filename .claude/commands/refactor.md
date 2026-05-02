@@ -13,7 +13,84 @@ Ask the user:
 
 ---
 
-## Step 2: Research Phase (skip if no replacement)
+## Step 2: Route — Cleanup Script or Full Pipeline?
+
+Check if what is being removed is one of the built-in starter features:
+
+| Feature key   | What it covers                                      |
+|---------------|-----------------------------------------------------|
+| `clerk`       | Auth, Organizations, Billing, profile pages         |
+| `kanban`      | Drag & drop task board, @dnd-kit packages           |
+| `chat`        | Messaging UI                                        |
+| `notifications` | Notification center & page                        |
+| `examples`    | Forms, React Query demo, Icons demo pages           |
+| `themes`      | Extra themes (keep only one)                        |
+| `sentry`      | Error tracking, instrumentation files               |
+
+**If YES → go to Path A (cleanup script)**
+**If NO → go to Path B (full pipeline)**
+
+---
+
+## PATH A — Built-in Feature Removal via cleanup.js
+
+This script knows exactly what files, folders, dependencies, env vars, and nav items
+belong to each feature. It is faster and more reliable than the AI pipeline for these cases.
+
+### A1: Preview first (dry run)
+```bash
+node scripts/cleanup.js --dry-run <feature>
+```
+Show the output to the user. Confirm they want to proceed.
+
+### A2: Human Approval Gate ✋
+Present the dry-run output.
+Ask: "Does this look correct? Shall I run the actual cleanup? (Y/N)"
+**Do NOT proceed without explicit approval.**
+
+### A3: Run cleanup
+```bash
+node scripts/cleanup.js <feature>
+```
+
+### A4: Sync dependencies
+```bash
+bun install
+```
+
+### A5: Verify
+```bash
+bun run build
+bun run lint
+```
+If build fails — stop and report. Do not proceed.
+
+### A6: Commit
+```bash
+git add -A
+git commit -m "refactor(<feature>): Remove <feature> via cleanup script"
+```
+
+### A7: Final Report
+```
+Removal Complete ✅
+Removed:        [feature]
+Method:         cleanup.js (built-in)
+Build status:   ✅ Passing
+Lint status:    ✅ Passing
+
+Manual steps remaining:
+ - Remove from .env.local: [list env vars cleanup.js printed]
+ - Test affected flows manually
+```
+
+---
+
+## PATH B — Arbitrary Removal via Multi-Agent Pipeline
+
+Use this when removing a library, pattern, or logic that is NOT in the cleanup.js feature list.
+
+### B1: Research Phase (skip if no replacement)
 
 Invoke @researcher agent:
 ```
@@ -29,9 +106,7 @@ Output: Structured report with exact steps.
 
 Wait for research report before proceeding.
 
----
-
-## Step 3: Audit Phase
+### B2: Audit Phase
 
 Invoke @refactoring-agent for audit ONLY:
 ```
@@ -48,9 +123,7 @@ Find all usages of [what is being removed] in this project:
 Present a complete impact report.
 ```
 
----
-
-## Step 4: Planning Phase
+### B3: Planning Phase
 
 Invoke @planner with research + audit results:
 ```
@@ -66,18 +139,13 @@ Create a step-by-step migration plan:
 - Final cleanup steps (packages, env vars, config)
 ```
 
----
-
-## Step 5: Human Approval Gate ✋
+### B4: Human Approval Gate ✋
 
 Present complete plan to user.
 Ask: "Does this plan look correct? Shall I proceed? (Y/N)"
-
 **Do NOT proceed without explicit approval.**
 
----
-
-## Step 6: Execution Phase
+### B5: Execution Phase
 
 Invoke @refactoring-agent with approved plan:
 ```
@@ -92,9 +160,7 @@ Rules:
 - No traces of [removed thing] should remain
 ```
 
----
-
-## Step 7: Verification Phase
+### B6: Verification Phase
 
 Invoke @code-reviewer:
 ```
@@ -106,11 +172,7 @@ Verify refactoring is complete:
 - Check all replaced patterns are consistent across files
 ```
 
-Substitute `<removed-package-or-term>` with the actual library name, import path, or pattern that was removed.
-
----
-
-## Step 8: Final Report
+### B7: Final Report
 ```
 Refactoring Complete ✅
 Removed:        [what]
