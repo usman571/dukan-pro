@@ -1,7 +1,7 @@
 ---
 name: nextjs-patterns
 description: >
-  Next.js 16 App Router patterns for this project.
+  Next.js 16 App Router patterns for Dukaan Pro.
   Auto-loaded when working with app/ directory, layouts, pages, or proxy.ts.
 triggers:
   - "app/"
@@ -12,37 +12,40 @@ triggers:
   - "server component"
 ---
 
-# Next.js 16 App Router Patterns
+# Next.js 16 App Router Patterns — Dukaan Pro
 
 ## IMPORTANT
 - Middleware file is `src/proxy.ts` — NOT middleware.ts
 - Tailwind v4 uses `@import 'tailwindcss'` — NOT `@tailwind base/components/utilities`
 - Linter is oxlint + oxfmt — NOT ESLint/Prettier
+- Auth: NextAuth v5 — `src/auth.ts` + `src/app/api/auth/[...nextauth]/route.ts`
+- No Sentry, no Clerk
 
 ## Page Pattern
 ```tsx
-// src/app/dashboard/[feature]/page.tsx
+// src/app/dashboard/inventory/page.tsx
 import { getQueryClient } from '@/lib/query-client';
 import { HydrationBoundary, dehydrate } from '@tanstack/react-query';
 import { Suspense } from 'react';
 import PageContainer from '@/components/layout/page-container';
+import { inventoryQueryOptions } from '@/features/inventory/api/queries';
 
-export const metadata = { title: 'Feature' };
+export const metadata = { title: 'Inventory | Dukaan Pro' };
 
-export default async function FeaturePage({ searchParams }: PageProps) {
-  const filters = featureSearchParamsCache.parse(await searchParams);
+export default async function InventoryPage({ searchParams }: PageProps) {
+  const filters = inventorySearchParamsCache.parse(await searchParams);
   const queryClient = getQueryClient();
 
-  void queryClient.prefetchQuery(featureQueryOptions(filters));
+  void queryClient.prefetchQuery(inventoryQueryOptions(filters)); // void NOT await
 
   return (
     <PageContainer
-      pageTitle='Feature Name'
-      pageDescription='Description here'
+      pageTitle="Inventory"
+      pageDescription="Apne products manage karein"
     >
       <HydrationBoundary state={dehydrate(queryClient)}>
-        <Suspense fallback={<Skeleton />}>
-          <FeatureTable filters={filters} />
+        <Suspense fallback={<InventorySkeleton />}>
+          <InventoryTable filters={filters} />
         </Suspense>
       </HydrationBoundary>
     </PageContainer>
@@ -52,13 +55,15 @@ export default async function FeaturePage({ searchParams }: PageProps) {
 
 ## Route Handler Pattern
 ```typescript
-// src/app/api/products/route.ts
+// src/app/api/inventory/route.ts
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 
 const schema = z.object({
   page: z.coerce.number().default(1),
-  limit: z.coerce.number().default(10),
+  limit: z.coerce.number().default(20),
+  search: z.string().optional(),
+  category: z.string().optional(),
 });
 
 export async function GET(request: NextRequest) {
@@ -77,7 +82,7 @@ export async function GET(request: NextRequest) {
 }
 ```
 
-## Error Boundary
+## Error Boundary (No Sentry)
 ```tsx
 // src/app/dashboard/[feature]/error.tsx
 'use client';
@@ -89,38 +94,63 @@ export default function FeatureError({
   reset: () => void;
 }) {
   return (
-    <div>
-      <p>Something went wrong</p>
+    <div className="flex flex-col items-center gap-4 p-6">
+      <p className="text-destructive">Kuch ghalat hua. Dobara koshish karein.</p>
       <button onClick={reset}>Try again</button>
     </div>
   );
 }
 ```
 
-## proxy.ts (middleware)
+## proxy.ts (Middleware + Auth Guard)
 ```typescript
-// src/proxy.ts — this project's middleware file
+// src/proxy.ts
+import { auth } from '@/auth';
 import { NextResponse } from 'next/server';
-import type { NextRequest } from 'next/server';
 
-const PROTECTED = ['/dashboard'];
-const PUBLIC = ['/auth/sign-in', '/auth/sign-up'];
+export default auth((req) => {
+  const isLoggedIn = !!req.auth;
+  const isOnDashboard = req.nextUrl.pathname.startsWith('/dashboard');
+  const isOnAuth = req.nextUrl.pathname.startsWith('/auth');
 
-export function middleware(request: NextRequest) {
-  const { pathname } = request.nextUrl;
-  const isProtected = PROTECTED.some(p => pathname.startsWith(p));
-  const session = request.cookies.get('session')?.value;
+  if (isOnDashboard && !isLoggedIn) {
+    return NextResponse.redirect(new URL('/auth/sign-in', req.url));
+  }
 
-  if (isProtected && !session) {
-    return NextResponse.redirect(new URL('/auth/sign-in', request.url));
+  if (isOnAuth && isLoggedIn) {
+    return NextResponse.redirect(new URL('/dashboard/overview', req.url));
   }
 
   return NextResponse.next();
-}
+});
 
 export const config = {
   matcher: ['/((?!api|_next/static|_next/image|favicon.ico).*)'],
 };
+```
+
+## Auth Pattern (NextAuth v5 Credentials)
+```typescript
+// src/auth.ts — credentials with phone+password
+import NextAuth from 'next-auth';
+import Credentials from 'next-auth/providers/credentials';
+
+export const { auth, handlers, signIn, signOut } = NextAuth({
+  providers: [
+    Credentials({
+      credentials: {
+        phone: { label: 'Phone', type: 'tel' },
+        password: { label: 'Password', type: 'password' },
+      },
+      async authorize(credentials) {
+        // validate against service layer
+        const user = await validateUser(credentials);
+        return user ?? null;
+      },
+    }),
+  ],
+  session: { strategy: 'jwt' },
+});
 ```
 
 ## Adding shadcn Component
@@ -131,6 +161,13 @@ bunx shadcn add [component-name]
 
 ## Image Domains (next.config.ts)
 ```typescript
-// next.config.ts — add external image domains here as needed
+// next.config.ts — add external image domains here
 // images: { remotePatterns: [{ hostname: 'example.com' }] }
+```
+
+## Clearing Build Cache
+```bash
+# When instrumentation or layout errors appear after file deletion:
+rm -rf .next
+bun run dev
 ```

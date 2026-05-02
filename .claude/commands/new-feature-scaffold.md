@@ -1,20 +1,20 @@
 # /new-feature-scaffold — Quick Feature Scaffold
 
-Quickly scaffolds the api/ layer for a new feature following the canonical pattern.
+Quickly scaffolds the api/ layer for a new Dukaan Pro feature following the canonical pattern.
 
 ## Step 1: Ask
-Feature name? (single word, lowercase, e.g. "invoices")
+1. Feature name? (single word, lowercase: `inventory` `udhaar` `sales` `purchases` `reports`)
+2. Which data model? (check CLAUDE.md for: Product, Sale, Customer, Transaction, Purchase)
 
 ## Step 2: Create Files in Order
 
 ### 1. src/features/<name>/api/types.ts
 ```typescript
-// Response shape
+// Base entity — match CLAUDE.md data models exactly
 export interface [Name] {
   id: number;
-  // add fields
+  // fields from CLAUDE.md data model
   createdAt: string;
-  updatedAt: string;
 }
 
 // List response
@@ -30,11 +30,12 @@ export interface [Name]Filters {
   page: number;
   limit: number;
   search?: string;
+  // add domain-specific filters (e.g. category for products, paymentMode for sales)
 }
 
 // Mutation payloads
 export interface Create[Name]Payload {
-  // add fields
+  // required fields for creation
 }
 
 export interface Update[Name]Payload extends Partial<Create[Name]Payload> {
@@ -44,7 +45,12 @@ export interface Update[Name]Payload extends Partial<Create[Name]Payload> {
 
 ### 2. src/features/<name>/api/service.ts
 ```typescript
-import { [Name], [Name]Filters, [Name]ListResponse, Create[Name]Payload, Update[Name]Payload } from './types';
+import type { [Name], [Name]Filters, [Name]ListResponse, Create[Name]Payload } from './types';
+
+// Mock data uses Pakistani context:
+// Names: Karim Bhai, Asif Mehmood, Farhana Bibi
+// Products: Tapal Danedar, Sufi Oil, Olpers Milk, National Salt
+// Amounts: realistic Rs values for kirana (50–5000 range)
 
 export async function get[Name]s(filters: [Name]Filters): Promise<[Name]ListResponse> {
   // TODO: replace with real API call
@@ -66,7 +72,7 @@ export async function create[Name](payload: Create[Name]Payload): Promise<[Name]
   throw new Error('Not implemented');
 }
 
-export async function update[Name](payload: Update[Name]Payload): Promise<[Name]> {
+export async function update[Name](id: number, payload: Partial<Create[Name]Payload>): Promise<[Name]> {
   // TODO: replace with real API call
   throw new Error('Not implemented');
 }
@@ -121,5 +127,6 @@ git commit -m "feat(<name>): Add React Query options"
 ## Step 4: Report
 Tell user:
 - 3 files created
-- To add UI: run /feature-dev
-- To connect real backend: only edit service.ts
+- Mock data uses Pakistani context (names, products, Rs amounts)
+- To add UI: run /feature-dev with the relevant screen refs (M? / D?)
+- To connect real backend: only edit service.ts — never touch queries.ts or types.ts for backend changes
