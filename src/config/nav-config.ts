@@ -1,17 +1,8 @@
 import { NavGroup } from '@/types';
 
-/**
- * Navigation configuration
- *
- * This configuration is used for both the sidebar navigation and Cmd+K bar.
- * Items are organized into groups, each rendered with a SidebarGroupLabel.
- *
- * Each navigation item can have an `access` property that controls visibility
- * based on permissions, plans, features, roles, and organization context.
- */
 export const navGroups: NavGroup[] = [
   {
-    label: 'Overview',
+    label: 'Menu',
     items: [
       {
         title: 'Dashboard',
@@ -22,39 +13,36 @@ export const navGroups: NavGroup[] = [
         items: []
       },
       {
-        title: 'Product',
-        url: '/dashboard/product',
+        title: 'Inventory',
+        url: '/dashboard/inventory',
         icon: 'product',
-        shortcut: ['p', 'p'],
         isActive: false,
+        shortcut: ['i', 'i'],
         items: []
       },
       {
-        title: 'Users',
-        url: '/dashboard/users',
-        icon: 'teams',
-        shortcut: ['u', 'u'],
+        title: 'Purchases',
+        url: '/dashboard/purchases',
+        icon: 'billing',
         isActive: false,
+        shortcut: ['p', 'p'],
         items: []
-      }
-    ]
-  },
-  {
-    label: '',
-    items: [
+      },
       {
-        title: 'Account',
-        url: '#',
-        icon: 'account',
-        isActive: true,
-        items: [
-          {
-            title: 'Login',
-            shortcut: ['l', 'l'],
-            url: '/',
-            icon: 'login'
-          }
-        ]
+        title: 'Udhaar',
+        url: '/dashboard/udhaar',
+        icon: 'teams',
+        isActive: false,
+        shortcut: ['u', 'u'],
+        items: []
+      },
+      {
+        title: 'Reports',
+        url: '/dashboard/reports',
+        icon: 'trendingUp',
+        isActive: false,
+        shortcut: ['r', 'r'],
+        items: []
       }
     ]
   }
