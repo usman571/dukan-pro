@@ -55,7 +55,19 @@ export default function AppSidebar() {
 
   return (
     <Sidebar collapsible='icon'>
-      <SidebarHeader />
+      <SidebarHeader className='p-4'>
+        <div className='flex items-center gap-3'>
+          <div className='flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-primary'>
+            <Icons.logo className='h-5 w-5 text-primary-foreground' />
+          </div>
+          <div className='flex min-w-0 flex-col'>
+            <span className='truncate text-sm font-bold leading-tight'>Dukaan Pro</span>
+            <span className='truncate text-xs leading-tight text-muted-foreground'>
+              {user?.shopName ?? 'My Shop'}
+            </span>
+          </div>
+        </div>
+      </SidebarHeader>
       <SidebarContent className='overflow-x-hidden'>
         {filteredGroups.map((group) => (
           <SidebarGroup key={group.label || 'ungrouped'} className='py-0'>
