@@ -47,25 +47,23 @@ export function SignUpView() {
     <div className='flex w-full flex-col items-center justify-center px-4 py-8 md:px-0 md:py-0'>
       {/* Logo — mobile only */}
       <div className='mb-8 flex flex-col items-center md:hidden'>
-        <div className='mb-3 flex h-12 w-12 items-center justify-center rounded-xl bg-[#10B981]'>
-          <Icons.logo className='h-7 w-7 text-white' />
+        <div className='mb-3 flex h-12 w-12 items-center justify-center rounded-xl bg-primary'>
+          <Icons.logo className='h-7 w-7 text-primary-foreground' />
         </div>
-        <h1 className='text-2xl font-bold text-white'>Dukaan Pro</h1>
-        <p className='mt-1 text-sm text-[#10B981]' dir='auto'>
-          Apni dukaan, apni jeb mein.
-        </p>
+        <h1 className='text-2xl font-bold text-foreground'>Dukaan Pro</h1>
+        <p className='mt-1 text-sm text-muted-foreground'>Your shop, in your pocket.</p>
       </div>
 
       {/* Form card */}
       <div
         className={cn(
-          'w-full max-w-sm rounded-2xl bg-white p-6 shadow-xl',
-          'md:max-w-md md:rounded-none md:bg-transparent md:p-0 md:shadow-none'
+          'w-full max-w-sm rounded-xl border border-border bg-card p-6 shadow-sm',
+          'md:max-w-md md:rounded-none md:border-0 md:bg-transparent md:p-0 md:shadow-none'
         )}
       >
-        <h2 className='mb-1 text-xl font-bold text-[#0D1117] md:text-2xl'>Create your shop</h2>
-        <p className='mb-6 text-sm text-muted-foreground' dir='auto'>
-          Sirf 1 minute. Phir aap ka hisaab phone mein.
+        <h2 className='mb-1 text-xl font-bold text-foreground md:text-2xl'>Create your shop</h2>
+        <p className='mb-6 text-sm text-muted-foreground'>
+          Set up your shop account in under a minute.
         </p>
 
         <form.AppForm>
@@ -184,7 +182,7 @@ export function SignUpView() {
                         onBlur={field.handleBlur}
                         onChange={(e) => field.handleChange(e.target.value)}
                       />
-                      <p className='text-xs text-muted-foreground'>Kam-az-kam 6 characters</p>
+                      <p className='text-xs text-muted-foreground'>Minimum 6 characters</p>
                       {isInvalid && <field.FieldError className='text-destructive text-sm' />}
                     </field.Field>
                   </field.FieldSet>
@@ -193,23 +191,21 @@ export function SignUpView() {
             </form.AppField>
 
             <p className='text-center text-xs text-muted-foreground'>
-              Account banake aap hamare{' '}
-              <button type='button' className='underline hover:text-[#10B981]'>
+              By creating an account, you agree to our{' '}
+              <button type='button' className='underline hover:text-primary'>
                 Terms of Service
-              </button>{' '}
-              se razi hain.
+              </button>
+              .
             </p>
 
-            <form.SubmitButton className='w-full bg-[#10B981] text-white hover:bg-[#059669]'>
-              Create account
-            </form.SubmitButton>
+            <form.SubmitButton className='w-full'>Create account</form.SubmitButton>
           </form.Form>
         </form.AppForm>
 
         <p className='mt-4 text-center text-sm text-muted-foreground'>
-          Pehle se account hai?{' '}
-          <Link href='/auth/sign-in' className='font-medium text-[#10B981] hover:underline'>
-            Log in karein
+          Already have an account?{' '}
+          <Link href='/auth/sign-in' className='font-medium text-primary hover:underline'>
+            Sign in
           </Link>
         </p>
       </div>
