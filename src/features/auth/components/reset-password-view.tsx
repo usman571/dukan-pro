@@ -29,7 +29,7 @@ export function ResetPasswordView() {
     validators: { onSubmit: resetSchema },
     onSubmit: async ({ value }) => {
       await resetPassword(value.password);
-      toast.success('Password update ho gaya! Ab login karein.');
+      toast.success('Password updated! You can now sign in.');
       router.push('/auth/sign-in');
     }
   });
@@ -38,25 +38,23 @@ export function ResetPasswordView() {
     <div className='flex w-full flex-col items-center justify-center px-4 py-8 md:px-0 md:py-0'>
       {/* Logo — mobile only */}
       <div className='mb-8 flex flex-col items-center md:hidden'>
-        <div className='mb-3 flex h-12 w-12 items-center justify-center rounded-xl bg-[#10B981]'>
-          <Icons.logo className='h-7 w-7 text-white' />
+        <div className='mb-3 flex h-12 w-12 items-center justify-center rounded-xl bg-primary'>
+          <Icons.logo className='h-7 w-7 text-primary-foreground' />
         </div>
-        <h1 className='text-2xl font-bold text-white'>Dukaan Pro</h1>
-        <p className='mt-1 text-sm text-[#10B981]' dir='auto'>
-          Apni dukaan, apni jeb mein.
-        </p>
+        <h1 className='text-2xl font-bold text-foreground'>Dukaan Pro</h1>
+        <p className='mt-1 text-sm text-muted-foreground'>Your shop, in your pocket.</p>
       </div>
 
       {/* Form card */}
       <div
         className={cn(
-          'w-full max-w-sm rounded-2xl bg-white p-6 shadow-xl',
-          'md:max-w-md md:rounded-none md:bg-transparent md:p-0 md:shadow-none'
+          'w-full max-w-sm rounded-xl border border-border bg-card p-6 shadow-sm',
+          'md:max-w-md md:rounded-none md:border-0 md:bg-transparent md:p-0 md:shadow-none'
         )}
       >
-        <h2 className='mb-1 text-xl font-bold text-[#0D1117] md:text-2xl'>Set new password</h2>
-        <p className='mb-6 text-sm text-muted-foreground' dir='auto'>
-          Naya password chunein. Kam-az-kam 6 characters.
+        <h2 className='mb-1 text-xl font-bold text-foreground md:text-2xl'>Set new password</h2>
+        <p className='mb-6 text-sm text-muted-foreground'>
+          Choose a new password, at least 6 characters.
         </p>
 
         <form.AppForm>
@@ -120,23 +118,21 @@ export function ResetPasswordView() {
                 if (!confirm) return null;
                 const match = password === confirm && password.length >= 6;
                 return (
-                  <p className={cn('text-sm', match ? 'text-[#10B981]' : 'text-[#EF4444]')}>
+                  <p className={cn('text-sm', match ? 'text-primary' : 'text-destructive')}>
                     {match ? '✓ Passwords match' : '✗ Passwords do not match'}
                   </p>
                 );
               }}
             </form.Subscribe>
 
-            <form.SubmitButton className='w-full bg-[#10B981] text-white hover:bg-[#059669]'>
-              Update password
-            </form.SubmitButton>
+            <form.SubmitButton className='w-full'>Update password</form.SubmitButton>
           </form.Form>
         </form.AppForm>
 
         <p className='mt-4 text-center text-sm text-muted-foreground'>
           <Link
             href='/auth/sign-in'
-            className='inline-flex items-center gap-1 font-medium text-[#10B981] hover:underline'
+            className='inline-flex items-center gap-1 font-medium text-primary hover:underline'
           >
             <Icons.chevronLeft className='h-4 w-4' />
             Back to login
