@@ -29,7 +29,7 @@ export function SignInView() {
         redirect: false
       });
       if (result?.error) {
-        toast.error('Email ya password galat hai.');
+        toast.error('Invalid email or password.');
         return;
       }
       router.push('/dashboard/overview');
@@ -41,24 +41,22 @@ export function SignInView() {
     <div className='flex w-full flex-col items-center justify-center px-4 py-8 md:px-0 md:py-0'>
       {/* Logo — mobile only */}
       <div className='mb-8 flex flex-col items-center md:hidden'>
-        <div className='mb-3 flex h-12 w-12 items-center justify-center rounded-xl bg-[#10B981]'>
-          <Icons.logo className='h-7 w-7 text-white' />
+        <div className='mb-3 flex h-12 w-12 items-center justify-center rounded-xl bg-primary'>
+          <Icons.logo className='h-7 w-7 text-primary-foreground' />
         </div>
-        <h1 className='text-2xl font-bold text-white'>Dukaan Pro</h1>
-        <p className='mt-1 text-sm text-[#10B981]' dir='auto'>
-          Apni dukaan, apni jeb mein.
-        </p>
+        <h1 className='text-2xl font-bold text-foreground'>Dukaan Pro</h1>
+        <p className='mt-1 text-sm text-muted-foreground'>Your shop, in your pocket.</p>
       </div>
 
       {/* Form card */}
       <div
         className={cn(
-          'w-full max-w-sm rounded-2xl bg-white p-6 shadow-xl',
-          'md:max-w-md md:rounded-none md:bg-transparent md:p-0 md:shadow-none'
+          'w-full max-w-sm rounded-xl border border-border bg-card p-6 shadow-sm',
+          'md:max-w-md md:rounded-none md:border-0 md:bg-transparent md:p-0 md:shadow-none'
         )}
       >
-        <h2 className='mb-1 text-xl font-bold text-[#0D1117] md:text-2xl'>Log In</h2>
-        <p className='mb-6 text-sm text-muted-foreground'>Apna account access karein.</p>
+        <h2 className='mb-1 text-xl font-bold text-foreground md:text-2xl'>Sign in</h2>
+        <p className='mb-6 text-sm text-muted-foreground'>Enter your email and password below.</p>
 
         <form.AppForm>
           <form.Form className='gap-4 p-0'>
@@ -73,7 +71,7 @@ export function SignInView() {
                         id={field.name}
                         type='email'
                         autoComplete='email'
-                        placeholder='aapka@email.com'
+                        placeholder='name@example.com'
                         aria-invalid={isInvalid}
                         value={field.state.value}
                         onBlur={field.handleBlur}
@@ -96,9 +94,9 @@ export function SignInView() {
                         <field.FieldLabel htmlFor={field.name}>Password</field.FieldLabel>
                         <Link
                           href='/auth/forgot-password'
-                          className='text-xs text-muted-foreground hover:text-[#10B981]'
+                          className='text-xs text-muted-foreground hover:text-primary'
                         >
-                          Bhool gaye?
+                          Forgot password?
                         </Link>
                       </div>
                       <Input
@@ -118,9 +116,7 @@ export function SignInView() {
               }}
             </form.AppField>
 
-            <form.SubmitButton className='w-full bg-[#10B981] text-white hover:bg-[#059669]'>
-              Log in
-            </form.SubmitButton>
+            <form.SubmitButton className='w-full'>Sign in</form.SubmitButton>
           </form.Form>
         </form.AppForm>
 
@@ -131,9 +127,9 @@ export function SignInView() {
         </div>
 
         <p className='text-center text-sm text-muted-foreground'>
-          Naya dukaan?{' '}
-          <Link href='/auth/sign-up' className='font-medium text-[#10B981] hover:underline'>
-            Account banayein
+          Don&apos;t have an account?{' '}
+          <Link href='/auth/sign-up' className='font-medium text-primary hover:underline'>
+            Create one
           </Link>
         </p>
       </div>
