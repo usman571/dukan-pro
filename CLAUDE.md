@@ -2,8 +2,8 @@
 
 ## Project Identity
 - **App**: Dukaan Pro — PWA shop-management for Pakistani kirana store owners
-- **Tagline**: "Apni dukaan, apni jeb mein"
-- **Users**: Small shop owners in Pakistan — mobile-first, bilingual (Urdu + English)
+- **Tagline**: "Your shop, in your pocket."
+- **Users**: Small shop owners in Pakistan — mobile-first, English UI
 - **Type**: Progressive Web App (mobile 320×640 + desktop 1280×800)
 
 ## Tech Stack
@@ -23,31 +23,19 @@
 ## Design System
 
 ### Colors
-```css
---ink-900: #0D1117    /* dark background — primary bg */
---green:   #10B981    /* profit, success, primary CTA */
---red:     #EF4444    /* udhaar, danger, debt */
---amber:   #F59E0B    /* low stock, warnings */
-```
+Use the shadcn/ui semantic color tokens — the active theme (zinc, slate, etc.) determines the actual values. Never hardcode hex values.
 
-**Never use hardcoded hex values or arbitrary Tailwind brackets for brand colors.**
-Use the semantic Tailwind utilities from the `dukan-pro` theme instead:
+| Purpose | Tailwind class |
+|---------|---------------|
+| Primary CTA, success bg | `bg-primary` / `text-primary` |
+| Danger, debt amounts | `bg-destructive` / `text-destructive` |
+| Page background | `bg-background` |
+| Card / panel background | `bg-card` |
+| Secondary surfaces | `bg-muted` |
+| Subtle / secondary text | `text-muted-foreground` |
+| Foreground on primary bg | `text-primary-foreground` |
+| Borders | `border-border` |
 
-| Purpose | Tailwind class | CSS variable |
-|---------|---------------|--------------|
-| Primary CTA, success bg | `bg-primary` / `text-primary` | `--primary` (#10B981 green) |
-| Danger actions | `bg-destructive` / `text-destructive` | `--destructive` (#EF4444 red) |
-| Profit values, positive amounts | `text-dp-profit` / `bg-dp-profit` | `--dp-profit` (#10B981 green) |
-| Udhaar balances, debt amounts | `text-dp-udhaar` / `bg-dp-udhaar` | `--dp-udhaar` (#EF4444 red) |
-| Low-stock alerts, warnings | `text-dp-warning` / `bg-dp-warning` | `--dp-warning` (#F59E0B amber) |
-| Page background | `bg-background` | `--background` (#0D1117 ink-900) |
-| Card / panel background | `bg-card` | `--card` |
-| Subtle / secondary text | `text-muted-foreground` | `--muted-foreground` |
-| Borders | `border-border` | `--border` |
-
-- Green → profit values, success states, primary buttons
-- Red → udhaar balances, debt amounts, danger actions
-- Amber → low stock alerts, warnings
 - All amounts: `Rs X,XXX` format (no ₨ symbol, always "Rs")
 
 ### Layout
@@ -60,7 +48,7 @@ Use the semantic Tailwind utilities from the `dukan-pro` theme instead:
 - Font: System UI
 - Scale: 9–28pt
 - Headings: weight 700–800
-- Bilingual: English UI labels + Urdu taglines/messages in proper Urdu script
+- Language: English only throughout the UI
 
 ## Project Structure
 ```
@@ -262,17 +250,8 @@ function formatRs(amount: number): string {
 - Touch targets minimum 44×44px
 - No hover-only interactions
 
-## Bilingual Pattern
-```tsx
-// Page headers and navigation: English
-// Taglines, success messages, descriptions: Urdu script
-// ✅ Correct
-<h1>Dashboard</h1>
-<p className="text-muted-foreground">Asalaam-o-Alaikum, Karim Bhai</p>
-
-// ✅ Urdu text — use proper script, right-to-left when needed
-<p dir="auto">Apni dukaan, apni jeb mein.</p>
-```
+## Language Rule
+English only — no Urdu strings anywhere in the UI. All labels, messages, toasts, placeholders, and descriptions must be in English.
 
 ## Commit Format
 ```
@@ -322,7 +301,8 @@ Scopes: `auth` · `dashboard` · `sales` · `inventory` · `purchases` · `udhaa
 16. **Data layer** — never import from `@/constants/mock-api*` in components — always go through service layer
 17. **No Sentry** — removed, do not re-add
 18. **No Clerk** — removed, use NextAuth v5 credentials only
-19. **No hardcoded colors** — never use hex values (`#10B981`) or arbitrary Tailwind brackets (`bg-[#EF4444]`) for brand colors — always use semantic theme utilities: `text-dp-profit`, `text-dp-udhaar`, `bg-dp-warning`, `bg-primary`, `text-destructive`, `bg-background`, `bg-card`, `text-muted-foreground`, `border-border`
+19. **No hardcoded colors** — never use hex values or arbitrary Tailwind brackets (`bg-[#...]`) — always use shadcn semantic tokens: `bg-primary`, `text-primary`, `text-primary-foreground`, `text-destructive`, `bg-background`, `bg-card`, `bg-muted`, `text-muted-foreground`, `border-border`
+20. **English only** — no Urdu strings, no `dir="auto"`, no bilingual copy anywhere in the UI
 
 ## DO NOT
 - ❌ Import icons from `@tabler/icons-react` directly
@@ -337,4 +317,5 @@ Scopes: `auth` · `dashboard` · `sales` · `inventory` · `purchases` · `udhaa
 - ❌ Use ₨ or PKR — use "Rs" prefix only
 - ❌ Build desktop-only components without 320px mobile fallback
 - ❌ Hardcode Pakistani phone numbers without validation (must be 11 digits, start with 03)
-- ❌ Use hardcoded hex colors or `bg-[#...]` — use `bg-dp-profit`, `text-dp-udhaar`, `bg-dp-warning`, `bg-primary`, `text-destructive` etc.
+- ❌ Use hardcoded hex colors or `bg-[#...]` — use `bg-primary`, `text-primary`, `text-destructive`, `bg-muted`, `bg-card` etc.
+- ❌ Use Urdu strings or `dir="auto"` — English only
