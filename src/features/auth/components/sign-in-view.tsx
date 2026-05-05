@@ -55,16 +55,16 @@ export function SignInView() {
           'md:max-w-md md:rounded-none md:border-0 md:bg-transparent md:p-0 md:shadow-none'
         )}
       >
-        <h2 className='mb-1 text-xl font-bold text-foreground md:text-2xl'>Sign in</h2>
+        <h2 className='mb-1 text-xl font-bold text-black md:text-2xl'>Sign in</h2>
         <p className='mb-6 text-sm text-muted-foreground'>Enter your email and password below.</p>
 
         <form.AppForm>
-          <form.Form className='gap-4 p-0'>
+          <form.Form className='gap-6 p-0'>
             <form.AppField name='email'>
               {(field) => {
                 const isInvalid = field.state.meta.isTouched && !field.state.meta.isValid;
                 return (
-                  <field.FieldSet>
+                  <field.FieldSet className='gap-2'>
                     <field.Field>
                       <field.FieldLabel htmlFor={field.name}>Email</field.FieldLabel>
                       <Input
@@ -88,7 +88,7 @@ export function SignInView() {
               {(field) => {
                 const isInvalid = field.state.meta.isTouched && !field.state.meta.isValid;
                 return (
-                  <field.FieldSet>
+                  <field.FieldSet className='gap-2'>
                     <field.Field>
                       <div className='flex items-center justify-between'>
                         <field.FieldLabel htmlFor={field.name}>Password</field.FieldLabel>

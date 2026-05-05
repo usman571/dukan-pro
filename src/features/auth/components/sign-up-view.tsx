@@ -67,12 +67,12 @@ export function SignUpView() {
         </p>
 
         <form.AppForm>
-          <form.Form className='gap-4 p-0'>
+          <form.Form className='gap-6 p-0'>
             <form.AppField name='shopName'>
               {(field) => {
                 const isInvalid = field.state.meta.isTouched && !field.state.meta.isValid;
                 return (
-                  <field.FieldSet>
+                  <field.FieldSet className='gap-2'>
                     <field.Field>
                       <field.FieldLabel htmlFor={field.name}>Shop Name</field.FieldLabel>
                       <Input
@@ -96,7 +96,7 @@ export function SignUpView() {
               {(field) => {
                 const isInvalid = field.state.meta.isTouched && !field.state.meta.isValid;
                 return (
-                  <field.FieldSet>
+                  <field.FieldSet className='gap-2'>
                     <field.Field>
                       <field.FieldLabel htmlFor={field.name}>Owner Name</field.FieldLabel>
                       <Input
@@ -120,7 +120,7 @@ export function SignUpView() {
               {(field) => {
                 const isInvalid = field.state.meta.isTouched && !field.state.meta.isValid;
                 return (
-                  <field.FieldSet>
+                  <field.FieldSet className='gap-2'>
                     <field.Field>
                       <field.FieldLabel htmlFor={field.name}>Phone Number</field.FieldLabel>
                       <Input
@@ -145,7 +145,7 @@ export function SignUpView() {
               {(field) => {
                 const isInvalid = field.state.meta.isTouched && !field.state.meta.isValid;
                 return (
-                  <field.FieldSet>
+                  <field.FieldSet className='gap-2'>
                     <field.Field>
                       <field.FieldLabel htmlFor={field.name}>City</field.FieldLabel>
                       <Input
@@ -169,7 +169,7 @@ export function SignUpView() {
               {(field) => {
                 const isInvalid = field.state.meta.isTouched && !field.state.meta.isValid;
                 return (
-                  <field.FieldSet>
+                  <field.FieldSet className='gap-2'>
                     <field.Field>
                       <field.FieldLabel htmlFor={field.name}>Set Password</field.FieldLabel>
                       <Input
