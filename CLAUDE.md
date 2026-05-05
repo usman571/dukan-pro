@@ -1,7 +1,7 @@
 # CLAUDE.md — Dukaan Pro
 
 ## Project Identity
-- **App**: Dukaan Pro — PWA shop-management for Pakistani kirana store owners
+- **App**: Dukaan Pro — PWA shop-management for small business owners in Pakistan (grocery, mobile phones, clothing, hardware, electronics, and more)
 - **Tagline**: "Your shop, in your pocket."
 - **Users**: Small shop owners in Pakistan — mobile-first, English UI
 - **Type**: Progressive Web App (mobile 320×640 + desktop 1280×800)
@@ -16,7 +16,7 @@
 - **State**: Zustand (UI), TanStack Query (server), Nuqs (URL)
 - **Forms**: TanStack Form + Zod via `useAppForm`
 - **Tables**: TanStack Table
-- **Auth**: NextAuth v5 — Credentials provider (email + password, no OTP)
+- **Auth**: NextAuth v5 — Credentials provider (identifier = email OR phone + password, no OTP)
 - **Forgot Password**: Email magic link (no SMS/OTP) — `sendResetEmail()` in service.ts
 - **Error Tracking**: None (Sentry removed)
 
@@ -91,7 +91,7 @@ src/
 ```typescript
 interface Shop {
   id: string;
-  name: string;         // e.g. "Karim Kiryana Store"
+  name: string;         // e.g. "Ahmed Electronics"
   ownerName: string;
   phone: string;        // Pakistani format: 03XX XXXXXXX
   city: string;
@@ -191,14 +191,18 @@ A6 Reset password       M6 Purchase       D6 Reports
 ### Signup Fields (A2)
 ```typescript
 interface SignUpFormValues {
-  shopName: string;      // "Karim Kiryana Store"
-  ownerName: string;     // "Karim Bhai"
-  phone: string;         // 03XX XXXXXXX format
+  shopName: string;      // "Ahmed Electronics" — any business type
+  ownerName: string;     // "Ahmed Khan"
+  phone: string;         // 03XX XXXXXXX format — mandatory
+  email: string;         // mandatory — used for sign-in and password reset
   city: string;          // "Lahore"
-  email: string;         // for magic link / account recovery
   password: string;      // min 6 characters
 }
 ```
+
+### Sign-In (A1)
+- Identifier field accepts **email OR phone number** — user can sign in with either
+- NextAuth `authorize()` calls `getDbUserByIdentifier()` which resolves by email or phone
 
 ## Feature API Pattern (Mandatory for every feature)
 ```
@@ -264,10 +268,18 @@ Scopes: `auth` · `dashboard` · `sales` · `inventory` · `purchases` · `udhaa
 
 ## Build Phases (Agreed Order)
 
-### Phase 1 — Foundation (Auth + Layout)
-1. **Auth pages** — A1, A2, A4, A5, A6 + D1 desktop split
-2. **Layout** — Mobile bottom nav (5 items) + Desktop sidebar restructure
-3. **Nav config** — Dukaan Pro nav items
+### Phase 1 — Foundation (Auth + Layout) ✅ COMPLETE
+1. **Auth pages** — A1, A2, A4, A5, A6 + D1 desktop split ✅
+2. **Layout** — Mobile bottom nav (5 items) + Desktop sidebar restructure ✅
+3. **Nav config** — Dukaan Pro nav items ✅
+
+#### Phase 1 Implementation Notes
+- Bottom nav: `src/components/layout/bottom-nav.tsx` — `md:hidden`, 5 tabs + center FAB
+- Nav items: Dashboard · Inventory · Purchases · Udhaar · Reports (in `src/config/nav-config.ts`)
+- Sidebar header: logo + "Dukaan Pro" + `session.user.shopName` (in `app-sidebar.tsx`)
+- Header: original SearchInput + ThemeSelector + ThemeModeToggle preserved, bell + "New sale" button added on right (desktop only)
+- Auth left pane: `bg-foreground text-background` for dark contrast (D1 split screen)
+- `shopName` threaded through NextAuth JWT → session (`src/auth.ts`, `src/types/next-auth.d.ts`)
 
 ### Phase 2 — Core Business Features
 4. **Dashboard** (M1 + D2) — KPIs, low-stock alert, recent sales
@@ -319,3 +331,5 @@ Scopes: `auth` · `dashboard` · `sales` · `inventory` · `purchases` · `udhaa
 - ❌ Hardcode Pakistani phone numbers without validation (must be 11 digits, start with 03)
 - ❌ Use hardcoded hex colors or `bg-[#...]` — use `bg-primary`, `text-primary`, `text-destructive`, `bg-muted`, `bg-card` etc.
 - ❌ Use Urdu strings or `dir="auto"` — English only
+- ❌ Use specific personal names in placeholders/examples — use generic names like "Ahmed Khan", "Sara Ali", "Example Shop" instead of "Karim Bhai", "Karim Kiryana Store"
+- ❌ Assume kiryana/grocery context — the app is for any small retail business (mobile phones, clothing, hardware, electronics, etc.)
