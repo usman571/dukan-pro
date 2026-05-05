@@ -4,6 +4,7 @@ import { dashboardStatsQueryOptions } from '@/features/dashboard/api/queries';
 import { useSuspenseQuery } from '@tanstack/react-query';
 import { KpiCard } from './kpi-card';
 import { LowStockBanner } from './low-stock-banner';
+import { LowStockPanel } from './low-stock-panel';
 import { RecentSalesList } from './recent-sales-list';
 import { SalesChart } from './sales-chart';
 import { TopUdhaarPanel } from './top-udhaar-panel';
@@ -20,7 +21,7 @@ export function DashboardView() {
   const shopName = 'Ahmed Electronics';
 
   return (
-    <div className='flex flex-col gap-4 p-4 md:mx-auto md:max-w-7xl md:p-6'>
+    <div className='flex flex-col gap-4 p-4 md:p-6'>
       {/* Greeting */}
       <div>
         <p className='text-sm text-muted-foreground'>Good morning</p>
@@ -54,7 +55,7 @@ export function DashboardView() {
         />
       </div>
 
-      {/* Mobile-only: banner + recent sales stacked */}
+      {/* Mobile-only: amber banner + recent sales */}
       <div className='flex flex-col gap-4 md:hidden'>
         <LowStockBanner />
         <RecentSalesList />
@@ -70,10 +71,10 @@ export function DashboardView() {
           </div>
         </div>
 
-        {/* Right — udhaar + low stock */}
+        {/* Right — udhaar panel + low stock panel */}
         <div className='flex flex-col gap-6 md:col-span-1'>
           <TopUdhaarPanel />
-          <LowStockBanner />
+          <LowStockPanel />
         </div>
       </div>
     </div>
