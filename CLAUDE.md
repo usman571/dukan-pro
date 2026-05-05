@@ -29,6 +29,22 @@
 --red:     #EF4444    /* udhaar, danger, debt */
 --amber:   #F59E0B    /* low stock, warnings */
 ```
+
+**Never use hardcoded hex values or arbitrary Tailwind brackets for brand colors.**
+Use the semantic Tailwind utilities from the `dukan-pro` theme instead:
+
+| Purpose | Tailwind class | CSS variable |
+|---------|---------------|--------------|
+| Primary CTA, success bg | `bg-primary` / `text-primary` | `--primary` (#10B981 green) |
+| Danger actions | `bg-destructive` / `text-destructive` | `--destructive` (#EF4444 red) |
+| Profit values, positive amounts | `text-dp-profit` / `bg-dp-profit` | `--dp-profit` (#10B981 green) |
+| Udhaar balances, debt amounts | `text-dp-udhaar` / `bg-dp-udhaar` | `--dp-udhaar` (#EF4444 red) |
+| Low-stock alerts, warnings | `text-dp-warning` / `bg-dp-warning` | `--dp-warning` (#F59E0B amber) |
+| Page background | `bg-background` | `--background` (#0D1117 ink-900) |
+| Card / panel background | `bg-card` | `--card` |
+| Subtle / secondary text | `text-muted-foreground` | `--muted-foreground` |
+| Borders | `border-border` | `--border` |
+
 - Green → profit values, success states, primary buttons
 - Red → udhaar balances, debt amounts, danger actions
 - Amber → low stock alerts, warnings
@@ -306,6 +322,7 @@ Scopes: `auth` · `dashboard` · `sales` · `inventory` · `purchases` · `udhaa
 16. **Data layer** — never import from `@/constants/mock-api*` in components — always go through service layer
 17. **No Sentry** — removed, do not re-add
 18. **No Clerk** — removed, use NextAuth v5 credentials only
+19. **No hardcoded colors** — never use hex values (`#10B981`) or arbitrary Tailwind brackets (`bg-[#EF4444]`) for brand colors — always use semantic theme utilities: `text-dp-profit`, `text-dp-udhaar`, `bg-dp-warning`, `bg-primary`, `text-destructive`, `bg-background`, `bg-card`, `text-muted-foreground`, `border-border`
 
 ## DO NOT
 - ❌ Import icons from `@tabler/icons-react` directly
@@ -320,3 +337,4 @@ Scopes: `auth` · `dashboard` · `sales` · `inventory` · `purchases` · `udhaa
 - ❌ Use ₨ or PKR — use "Rs" prefix only
 - ❌ Build desktop-only components without 320px mobile fallback
 - ❌ Hardcode Pakistani phone numbers without validation (must be 11 digits, start with 03)
+- ❌ Use hardcoded hex colors or `bg-[#...]` — use `bg-dp-profit`, `text-dp-udhaar`, `bg-dp-warning`, `bg-primary`, `text-destructive` etc.
