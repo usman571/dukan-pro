@@ -2,8 +2,9 @@ export interface AuthUser {
   id: string;
   email: string;
   name: string;
-  passwordHash: string;
-  role: string;
+  shopName: string;
+  phone: string;
+  city: string;
 }
 
 export interface SignInFormValues {
@@ -12,7 +13,18 @@ export interface SignInFormValues {
 }
 
 export interface SignUpFormValues {
-  email: string;
+  shopName: string;
+  ownerName: string;
+  phone: string;
+  city: string;
   password: string;
-  phoneNumber: string;
+}
+
+export interface ForgotPasswordFormValues {
+  email: string;
+}
+
+export interface ResetPasswordFormValues {
+  password: string;
+  confirmPassword: string;
 }
