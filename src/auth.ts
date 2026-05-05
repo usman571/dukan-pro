@@ -1,10 +1,10 @@
 import NextAuth, { type NextAuthConfig } from 'next-auth';
 import Credentials from 'next-auth/providers/credentials';
 import { z } from 'zod';
-import { getDbUserByEmail, verifyPassword } from '@/features/auth/api/service';
+import { getDbUserByIdentifier, verifyPassword } from '@/features/auth/api/service';
 
 const credentialsSchema = z.object({
-  email: z.string().email(),
+  identifier: z.string().min(1),
   password: z.string().min(1)
 });
 
@@ -12,20 +12,26 @@ export const config: NextAuthConfig = {
   providers: [
     Credentials({
       credentials: {
-        email: { label: 'Email', type: 'email' },
+        identifier: { label: 'Email or Phone', type: 'text' },
         password: { label: 'Password', type: 'password' }
       },
       async authorize(credentials) {
         const parsed = credentialsSchema.safeParse(credentials);
         if (!parsed.success) return null;
 
-        const user = await getDbUserByEmail(parsed.data.email);
+        const user = await getDbUserByIdentifier(parsed.data.identifier);
         if (!user) return null;
 
         const match = await verifyPassword(parsed.data.password, user.passwordHash);
         if (!match) return null;
 
-        return { id: user.id, email: user.email, name: user.name, role: user.role };
+        return {
+          id: user.id,
+          email: user.email,
+          name: user.name,
+          role: user.role,
+          shopName: user.shopName
+        };
       }
     })
   ],
@@ -35,12 +41,14 @@ export const config: NextAuthConfig = {
       if (user) {
         token.id = user.id;
         token.role = (user as { role?: string }).role ?? 'user';
+        token.shopName = (user as { shopName?: string }).shopName;
       }
       return token;
     },
     session({ session, token }) {
       session.user.id = token.id as string;
       session.user.role = token.role as string;
+      session.user.shopName = token.shopName as string | undefined;
       return session;
     }
   },
