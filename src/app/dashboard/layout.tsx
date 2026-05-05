@@ -1,5 +1,6 @@
 import KBar from '@/components/kbar';
 import AppSidebar from '@/components/layout/app-sidebar';
+import { BottomNav } from '@/components/layout/bottom-nav';
 import Header from '@/components/layout/header';
 import { InfoSidebar } from '@/components/layout/info-sidebar';
 import { InfobarProvider } from '@/components/ui/infobar';
@@ -8,8 +9,8 @@ import type { Metadata } from 'next';
 import { cookies } from 'next/headers';
 
 export const metadata: Metadata = {
-  title: 'Next Shadcn Dashboard Starter',
-  description: 'Basic dashboard with Next.js and Shadcn',
+  title: 'Dukaan Pro',
+  description: 'Manage your shop',
   robots: {
     index: false,
     follow: false
@@ -17,7 +18,6 @@ export const metadata: Metadata = {
 };
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
-  // Persisting the sidebar state in the cookie.
   const cookieStore = await cookies();
   const defaultOpen = cookieStore.get('sidebar_state')?.value === 'true';
   return (
@@ -27,11 +27,12 @@ export default async function DashboardLayout({ children }: { children: React.Re
         <SidebarInset>
           <Header />
           <InfobarProvider defaultOpen={false}>
-            {children}
+            <main className='pb-16 md:pb-0'>{children}</main>
             <InfoSidebar side='right' />
           </InfobarProvider>
         </SidebarInset>
       </SidebarProvider>
+      <BottomNav />
     </KBar>
   );
 }
