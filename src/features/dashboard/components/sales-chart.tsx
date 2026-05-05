@@ -2,7 +2,16 @@
 
 import { salesChartQueryOptions } from '@/features/dashboard/api/queries';
 import { useSuspenseQuery } from '@tanstack/react-query';
-import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
+import {
+  Bar,
+  BarChart,
+  CartesianGrid,
+  Cell,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis
+} from 'recharts';
 
 export function SalesChart() {
   const { data } = useSuspenseQuery(salesChartQueryOptions());
@@ -11,7 +20,7 @@ export function SalesChart() {
     <div className='rounded-xl border border-border bg-card p-4'>
       <h2 className='mb-4 text-base font-semibold'>Sales — last 7 days</h2>
       <ResponsiveContainer width='100%' height={220}>
-        <BarChart data={data} margin={{ top: 0, right: 0, bottom: 0, left: 0 }}>
+        <BarChart data={data} margin={{ top: 4, right: 0, bottom: 0, left: 0 }}>
           <CartesianGrid strokeDasharray='3 3' stroke='hsl(var(--border))' vertical={false} />
           <XAxis
             dataKey='day'
@@ -36,7 +45,17 @@ export function SalesChart() {
             }}
             cursor={{ fill: 'hsl(var(--muted))' }}
           />
-          <Bar dataKey='sales' fill='hsl(var(--primary))' radius={[4, 4, 0, 0]} />
+          <Bar dataKey='sales' radius={[4, 4, 0, 0]}>
+            {data.map((_, index) => (
+              <Cell
+                key={`cell-${index}`}
+                fill={
+                  index === data.length - 1 ? 'hsl(var(--primary))' : 'hsl(var(--muted-foreground))'
+                }
+                opacity={index === data.length - 1 ? 1 : 0.4}
+              />
+            ))}
+          </Bar>
         </BarChart>
       </ResponsiveContainer>
     </div>
