@@ -1,9 +1,10 @@
-import { SidebarTrigger } from '../ui/sidebar';
-import { Separator } from '../ui/separator';
+import { Icons } from '@/components/icons';
+import { ThemeModeToggle } from '@/components/themes/theme-mode-toggle';
+import { Button } from '@/components/ui/button';
+import { Separator } from '@/components/ui/separator';
+import { SidebarTrigger } from '@/components/ui/sidebar';
+import Link from 'next/link';
 import { Breadcrumbs } from '../breadcrumbs';
-import SearchInput from '../search-input';
-import { ThemeSelector } from '../themes/theme-selector';
-import { ThemeModeToggle } from '../themes/theme-mode-toggle';
 
 export default function Header() {
   return (
@@ -15,13 +16,21 @@ export default function Header() {
       </div>
 
       <div className='flex items-center gap-2 px-4'>
-        <div className='hidden md:flex'>
-          <SearchInput />
-        </div>
         <ThemeModeToggle />
-        <div className='hidden sm:block'>
-          <ThemeSelector />
-        </div>
+        <Button
+          variant='ghost'
+          size='icon'
+          className='hidden h-9 w-9 md:flex'
+          aria-label='Notifications'
+        >
+          <Icons.notification className='h-4 w-4' />
+        </Button>
+        <Button asChild size='sm' className='hidden md:flex'>
+          <Link href='/dashboard/sales/new'>
+            <Icons.add className='mr-1.5 h-4 w-4' />
+            New sale
+          </Link>
+        </Button>
       </div>
     </header>
   );
