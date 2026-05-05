@@ -1,0 +1,201 @@
+/* Dukaan Pro Theme
+ * Dark-first design for Pakistani kirana store owners.
+ * Colors:
+ *   Ink-900  #0D1117  — primary background
+ *   Green    #10B981  — profit, success, primary CTA
+ *   Red      #EF4444  — udhaar, danger, debt
+ *   Amber    #F59E0B  — low stock, warnings
+ *
+ * This theme is always dark — the .dark class has no additional effect.
+ *
+ * Semantic Tailwind utilities exposed:
+ *   bg-dp-profit / text-dp-profit   → green  #10B981
+ *   bg-dp-udhaar / text-dp-udhaar   → red    #EF4444
+ *   bg-dp-warning / text-dp-warning → amber  #F59E0B
+ *   bg-dp-ink / text-dp-ink         → ink    #0D1117
+ */
+
+[data-theme='dukan-pro'] {
+  /* Backgrounds */
+  --background: oklch(0.121 0.013 264); /* #0D1117 ink-900 */
+  --foreground: oklch(0.921 0.008 265); /* #E6EDF3 */
+
+  /* Card — one step lighter than background */
+  --card: oklch(0.165 0.014 262); /* #161B22 */
+  --card-foreground: oklch(0.921 0.008 265);
+
+  /* Popover */
+  --popover: oklch(0.196 0.014 262); /* #1C2128 */
+  --popover-foreground: oklch(0.86 0.008 265);
+
+  /* Primary = green #10B981 */
+  --primary: oklch(0.696 0.17 162);
+  --primary-foreground: oklch(0.118 0.012 162);
+
+  /* Secondary */
+  --secondary: oklch(0.22 0.014 261); /* #21262D */
+  --secondary-foreground: oklch(0.86 0.008 265);
+
+  /* Muted */
+  --muted: oklch(0.22 0.014 261);
+  --muted-foreground: oklch(0.614 0.012 255); /* #8B949E */
+
+  /* Accent */
+  --accent: oklch(0.22 0.014 261);
+  --accent-foreground: oklch(0.921 0.008 265);
+
+  /* Destructive = red #EF4444 */
+  --destructive: oklch(0.637 0.237 25);
+  --destructive-foreground: oklch(1 0 0);
+
+  /* Border / Input */
+  --border: oklch(0.268 0.014 258); /* #30363D */
+  --input: oklch(0.22 0.014 261);
+  --ring: oklch(0.696 0.17 162); /* green focus ring */
+
+  /* Charts */
+  --chart-1: oklch(0.696 0.17 162); /* green  — sales */
+  --chart-2: oklch(0.637 0.237 25); /* red    — udhaar */
+  --chart-3: oklch(0.769 0.188 70); /* amber  — warnings */
+  --chart-4: oklch(0.58 0.18 260); /* blue   — purchases */
+  --chart-5: oklch(0.7 0.15 300); /* purple — misc */
+
+  /* Sidebar */
+  --sidebar: oklch(0.121 0.013 264);
+  --sidebar-foreground: oklch(0.921 0.008 265);
+  --sidebar-primary: oklch(0.696 0.17 162);
+  --sidebar-primary-foreground: oklch(0.118 0.012 162);
+  --sidebar-accent: oklch(0.22 0.014 261);
+  --sidebar-accent-foreground: oklch(0.921 0.008 265);
+  --sidebar-border: oklch(0.268 0.014 258);
+  --sidebar-ring: oklch(0.696 0.17 162);
+
+  /* Dukaan Pro semantic tokens — use these instead of hardcoded hex */
+  --dp-profit: oklch(0.696 0.17 162); /* #10B981 green */
+  --dp-udhaar: oklch(0.637 0.237 25); /* #EF4444 red */
+  --dp-warning: oklch(0.769 0.188 70); /* #F59E0B amber */
+  --dp-ink: oklch(0.121 0.013 264); /* #0D1117 ink-900 */
+
+  /* Typography — system-ui per design spec */
+  --font-sans: system-ui, sans-serif;
+  --font-serif: ui-serif, Georgia, serif;
+  --font-mono: ui-monospace, monospace;
+
+  /* Shape */
+  --radius: 0.5rem;
+
+  /* Shadows — stronger on dark bg */
+  --shadow-2xs: 0px 1px 2px 0px hsl(0 0% 0% / 0.35);
+  --shadow-xs: 0px 1px 2px 0px hsl(0 0% 0% / 0.35);
+  --shadow-sm: 0px 1px 3px 0px hsl(0 0% 0% / 0.45), 0px 1px 2px -1px hsl(0 0% 0% / 0.45);
+  --shadow: 0px 1px 3px 0px hsl(0 0% 0% / 0.45), 0px 1px 2px -1px hsl(0 0% 0% / 0.45);
+  --shadow-md: 0px 2px 4px 0px hsl(0 0% 0% / 0.45), 0px 2px 4px -1px hsl(0 0% 0% / 0.45);
+  --shadow-lg: 0px 4px 6px 0px hsl(0 0% 0% / 0.45), 0px 4px 6px -1px hsl(0 0% 0% / 0.45);
+  --shadow-xl: 0px 8px 10px 0px hsl(0 0% 0% / 0.45), 0px 8px 10px -1px hsl(0 0% 0% / 0.45);
+  --shadow-2xl: 0px 16px 32px 0px hsl(0 0% 0% / 0.55);
+
+  --tracking-normal: 0em;
+  --spacing: 0.25rem;
+}
+
+/* Dukaan Pro is always dark — .dark has no additional effect */
+[data-theme='dukan-pro'].dark {
+  --background: oklch(0.121 0.013 264);
+  --foreground: oklch(0.921 0.008 265);
+  --card: oklch(0.165 0.014 262);
+  --card-foreground: oklch(0.921 0.008 265);
+  --popover: oklch(0.196 0.014 262);
+  --popover-foreground: oklch(0.86 0.008 265);
+  --primary: oklch(0.696 0.17 162);
+  --primary-foreground: oklch(0.118 0.012 162);
+  --secondary: oklch(0.22 0.014 261);
+  --secondary-foreground: oklch(0.86 0.008 265);
+  --muted: oklch(0.22 0.014 261);
+  --muted-foreground: oklch(0.614 0.012 255);
+  --accent: oklch(0.22 0.014 261);
+  --accent-foreground: oklch(0.921 0.008 265);
+  --destructive: oklch(0.637 0.237 25);
+  --destructive-foreground: oklch(1 0 0);
+  --border: oklch(0.268 0.014 258);
+  --input: oklch(0.22 0.014 261);
+  --ring: oklch(0.696 0.17 162);
+  --chart-1: oklch(0.696 0.17 162);
+  --chart-2: oklch(0.637 0.237 25);
+  --chart-3: oklch(0.769 0.188 70);
+  --chart-4: oklch(0.58 0.18 260);
+  --chart-5: oklch(0.7 0.15 300);
+  --sidebar: oklch(0.121 0.013 264);
+  --sidebar-foreground: oklch(0.921 0.008 265);
+  --sidebar-primary: oklch(0.696 0.17 162);
+  --sidebar-primary-foreground: oklch(0.118 0.012 162);
+  --sidebar-accent: oklch(0.22 0.014 261);
+  --sidebar-accent-foreground: oklch(0.921 0.008 265);
+  --sidebar-border: oklch(0.268 0.014 258);
+  --sidebar-ring: oklch(0.696 0.17 162);
+  --dp-profit: oklch(0.696 0.17 162);
+  --dp-udhaar: oklch(0.637 0.237 25);
+  --dp-warning: oklch(0.769 0.188 70);
+  --dp-ink: oklch(0.121 0.013 264);
+}
+
+[data-theme='dukan-pro'] {
+  @theme inline {
+    /* Standard shadcn tokens */
+    --color-background: var(--background);
+    --color-foreground: var(--foreground);
+    --color-card: var(--card);
+    --color-card-foreground: var(--card-foreground);
+    --color-popover: var(--popover);
+    --color-popover-foreground: var(--popover-foreground);
+    --color-primary: var(--primary);
+    --color-primary-foreground: var(--primary-foreground);
+    --color-secondary: var(--secondary);
+    --color-secondary-foreground: var(--secondary-foreground);
+    --color-muted: var(--muted);
+    --color-muted-foreground: var(--muted-foreground);
+    --color-accent: var(--accent);
+    --color-accent-foreground: var(--accent-foreground);
+    --color-destructive: var(--destructive);
+    --color-destructive-foreground: var(--destructive-foreground);
+    --color-border: var(--border);
+    --color-input: var(--input);
+    --color-ring: var(--ring);
+    --color-chart-1: var(--chart-1);
+    --color-chart-2: var(--chart-2);
+    --color-chart-3: var(--chart-3);
+    --color-chart-4: var(--chart-4);
+    --color-chart-5: var(--chart-5);
+    --color-sidebar: var(--sidebar);
+    --color-sidebar-foreground: var(--sidebar-foreground);
+    --color-sidebar-primary: var(--sidebar-primary);
+    --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+    --color-sidebar-accent: var(--sidebar-accent);
+    --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+    --color-sidebar-border: var(--sidebar-border);
+    --color-sidebar-ring: var(--sidebar-ring);
+
+    /* Dukaan Pro semantic utilities */
+    --color-dp-profit: var(--dp-profit);
+    --color-dp-udhaar: var(--dp-udhaar);
+    --color-dp-warning: var(--dp-warning);
+    --color-dp-ink: var(--dp-ink);
+
+    --font-sans: var(--font-sans);
+    --font-mono: var(--font-mono);
+    --font-serif: var(--font-serif);
+
+    --radius-sm: calc(var(--radius) - 4px);
+    --radius-md: calc(var(--radius) - 2px);
+    --radius-lg: var(--radius);
+    --radius-xl: calc(var(--radius) + 4px);
+
+    --shadow-2xs: var(--shadow-2xs);
+    --shadow-xs: var(--shadow-xs);
+    --shadow-sm: var(--shadow-sm);
+    --shadow: var(--shadow);
+    --shadow-md: var(--shadow-md);
+    --shadow-lg: var(--shadow-lg);
+    --shadow-xl: var(--shadow-xl);
+    --shadow-2xl: var(--shadow-2xl);
+  }
+}
