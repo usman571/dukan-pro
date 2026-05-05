@@ -1,5 +1,7 @@
 import { Icons } from '@/components/icons';
+import SearchInput from '@/components/search-input';
 import { ThemeModeToggle } from '@/components/themes/theme-mode-toggle';
+import { ThemeSelector } from '@/components/themes/theme-selector';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { SidebarTrigger } from '@/components/ui/sidebar';
@@ -16,7 +18,13 @@ export default function Header() {
       </div>
 
       <div className='flex items-center gap-2 px-4'>
+        <div className='hidden md:flex'>
+          <SearchInput />
+        </div>
         <ThemeModeToggle />
+        <div className='hidden sm:block'>
+          <ThemeSelector />
+        </div>
         <Button
           variant='ghost'
           size='icon'
