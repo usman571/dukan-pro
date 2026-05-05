@@ -16,7 +16,8 @@
 - **State**: Zustand (UI), TanStack Query (server), Nuqs (URL)
 - **Forms**: TanStack Form + Zod via `useAppForm`
 - **Tables**: TanStack Table
-- **Auth**: NextAuth v5 — Credentials provider (phone + password, no OTP)
+- **Auth**: NextAuth v5 — Credentials provider (email + password, no OTP)
+- **Forgot Password**: Email magic link (no SMS/OTP) — `sendResetEmail()` in service.ts
 - **Error Tracking**: None (Sentry removed)
 
 ## Design System
@@ -49,13 +50,19 @@
 ```
 src/
 ├── app/
-│   ├── (auth)/          # Auth pages: sign-in, sign-up, forgot-password, reset-password
+│   ├── auth/            # Auth pages (URL: /auth/sign-in etc.)
+│   │   ├── sign-in/     # A1: Login
+│   │   ├── sign-up/     # A2: Create account (A3 OTP skipped)
+│   │   ├── success/     # A4: Signup success
+│   │   ├── forgot-password/  # A5: Forgot password (email magic link)
+│   │   └── reset-password/   # A6: Reset password
 │   └── dashboard/       # Protected app pages
-│       ├── overview/    # M1/D2: Dashboard
-│       ├── sales/       # M2/M3/D3: New sale + POS
+│       ├── overview/    # M1/D2: Dashboard — KPIs, low-stock, recent sales
+│       ├── sales/       # M2/M3/D3: New sale + confirmation + POS
 │       ├── inventory/   # M4/M5/D4: Product list + add product
 │       ├── purchases/   # M6: Record purchase
 │       ├── udhaar/      # M7/M8/D5: Udhaar khaata + customer detail
+│       │   └── [customerId]/ # M8: Customer detail page
 │       └── reports/     # M9/D6: Reports
 ├── features/            # ALL new feature code goes here
 │   ├── inventory/       # Products — canonical api/ pattern
@@ -156,16 +163,37 @@ interface PurchaseItem {
 
 ## App Screens Reference (from design PDF)
 ```
-AUTH          MOBILE APP        DESKTOP PWA
-A1 Login      M1 Dashboard      D1 Login (split)
-A2 Sign up    M2 New sale       D2 Dashboard
-A3 OTP        M3 Confirmation   D3 New sale (POS)
-A4 Success    M4 Inventory      D4 Inventory table
-A5 Forgot     M5 Add product    D5 Udhaar dashboard
-A6 Reset      M6 Purchase       D6 Reports
-              M7 Udhaar list
-              M8 Customer detail
-              M9 Reports
+AUTH                    MOBILE APP        DESKTOP PWA
+A1 Login                M1 Dashboard      D1 Login (split screen)
+A2 Create account       M2 New sale       D2 Dashboard
+A3 OTP ← SKIPPED        M3 Confirmation   D3 New sale (POS)
+A4 Signup success       M4 Inventory      D4 Inventory table
+A5 Forgot password      M5 Add product    D5 Udhaar dashboard
+A6 Reset password       M6 Purchase       D6 Reports
+                        M7 Udhaar list
+                        M8 Customer detail
+                        M9 Reports
+```
+
+### Auth Flow Details
+- **A1 Login**: Email + password → dashboard
+- **A2 Signup**: Shop name, Owner name, Phone, City, Email, Password → A4 (skip A3)
+- **A3 OTP**: ❌ SKIPPED — not implemented
+- **A4 Success**: Green screen — "Record first sale" / "Skip to dashboard"
+- **A5 Forgot**: User enters email → magic link sent → email client → A6
+- **A6 Reset**: New password + confirm → A1 (login)
+- **D1 Desktop Login**: Split screen — marketing pane (left) + form (right)
+
+### Signup Fields (A2)
+```typescript
+interface SignUpFormValues {
+  shopName: string;      // "Karim Kiryana Store"
+  ownerName: string;     // "Karim Bhai"
+  phone: string;         // 03XX XXXXXXX format
+  city: string;          // "Lahore"
+  email: string;         // for magic link / account recovery
+  password: string;      // min 6 characters
+}
 ```
 
 ## Feature API Pattern (Mandatory for every feature)
@@ -238,6 +266,25 @@ refactor(sales): Extract cart logic to hook
 chore(deps): Remove @dnd-kit packages
 ```
 Scopes: `auth` · `dashboard` · `sales` · `inventory` · `purchases` · `udhaar` · `reports` · `nav` · `layout` · `deps`
+
+## Build Phases (Agreed Order)
+
+### Phase 1 — Foundation (Auth + Layout)
+1. **Auth pages** — A1, A2, A4, A5, A6 + D1 desktop split
+2. **Layout** — Mobile bottom nav (5 items) + Desktop sidebar restructure
+3. **Nav config** — Dukaan Pro nav items
+
+### Phase 2 — Core Business Features
+4. **Dashboard** (M1 + D2) — KPIs, low-stock alert, recent sales
+5. **Inventory** (M4 + M5 + D4) — Product list, add product, data table
+6. **Sales** (M2 + M3 + D3) — Cart, confirmation, POS layout
+7. **Udhaar** (M7 + M8 + D5) — Khaata list, customer detail, dashboard
+
+### Phase 3 — Supporting Features
+8. **Purchases** (M6) — Supplier, line items, paid/balance
+9. **Reports** (M9 + D6) — Period selector, charts, top products
+
+**Data Strategy**: Mock data via service layer — `service.ts` is the only file to swap when real backend arrives.
 
 ## CRITICAL RULES
 
