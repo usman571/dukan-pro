@@ -1,7 +1,7 @@
 import NextAuth, { type NextAuthConfig } from 'next-auth';
 import Credentials from 'next-auth/providers/credentials';
 import { z } from 'zod';
-import { getUserByEmail, verifyPassword } from '@/features/auth/api/service';
+import { getDbUserByEmail, verifyPassword } from '@/features/auth/api/service';
 
 const credentialsSchema = z.object({
   email: z.string().email(),
@@ -19,7 +19,7 @@ export const config: NextAuthConfig = {
         const parsed = credentialsSchema.safeParse(credentials);
         if (!parsed.success) return null;
 
-        const user = await getUserByEmail(parsed.data.email);
+        const user = await getDbUserByEmail(parsed.data.email);
         if (!user) return null;
 
         const match = await verifyPassword(parsed.data.password, user.passwordHash);

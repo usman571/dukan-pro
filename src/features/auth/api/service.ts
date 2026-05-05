@@ -1,33 +1,42 @@
-import bcrypt from 'bcryptjs';
+import { compare } from 'bcryptjs';
 import type { AuthUser, SignUpFormValues } from './types';
 
-const MOCK_USERS: AuthUser[] = [
+interface DbUser extends AuthUser {
+  passwordHash: string;
+  role: string;
+}
+
+const MOCK_DB_USERS: DbUser[] = [
   {
     id: '1',
     email: 'admin@example.com',
     name: 'Karim Bhai',
     shopName: 'Karim Kiryana Store',
     phone: '03001234567',
-    city: 'Lahore'
+    city: 'Lahore',
+    // bcryptjs hash of "password123"
+    passwordHash: '$2b$10$pT6fQanKZY1SvW.YhkPMNeB9jf1X/NHCR40mtjT5dhst49siBqLau',
+    role: 'user'
   }
 ];
-
-const MOCK_PASSWORD_HASH = '$2b$10$pT6fQanKZY1SvW.YhkPMNeB9jf1X/NHCR40mtjT5dhst49siBqLau';
 
 function delay(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
+export async function getDbUserByEmail(email: string): Promise<DbUser | null> {
+  return MOCK_DB_USERS.find((u) => u.email === email) ?? null;
+}
+
 export async function getUserByEmail(email: string): Promise<AuthUser | null> {
-  return MOCK_USERS.find((u) => u.email === email) ?? null;
+  const user = await getDbUserByEmail(email);
+  if (!user) return null;
+  const { passwordHash: _h, role: _r, ...profile } = user;
+  return profile;
 }
 
 export async function verifyPassword(plain: string, hash: string): Promise<boolean> {
-  return bcrypt.compare(plain, hash);
-}
-
-export async function getMockPasswordHash(): Promise<string> {
-  return MOCK_PASSWORD_HASH;
+  return compare(plain, hash);
 }
 
 export async function signUp(values: SignUpFormValues): Promise<AuthUser> {
@@ -40,7 +49,7 @@ export async function signUp(values: SignUpFormValues): Promise<AuthUser> {
     phone: values.phone,
     city: values.city
   };
-  MOCK_USERS.push(user);
+  MOCK_DB_USERS.push({ ...user, passwordHash: '', role: 'user' });
   return user;
 }
 

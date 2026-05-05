@@ -194,9 +194,9 @@ export function SignUpView() {
 
             <p className='text-center text-xs text-muted-foreground'>
               Account banake aap hamare{' '}
-              <a href='#' className='underline hover:text-[#10B981]'>
+              <button type='button' className='underline hover:text-[#10B981]'>
                 Terms of Service
-              </a>{' '}
+              </button>{' '}
               se razi hain.
             </p>
 
