@@ -20,11 +20,11 @@ export default async function DashboardLayout({ children }: { children: React.Re
   const defaultOpen = cookieStore.get('sidebar_state')?.value === 'true';
   return (
     <KBar>
-      <SidebarProvider defaultOpen={defaultOpen}>
+      <SidebarProvider defaultOpen={defaultOpen} className='md:h-svh'>
         <AppSidebar />
         <SidebarInset>
           <Header />
-          <main className='pb-16 md:pb-0 w-full'>{children}</main>
+          <main className='flex flex-1 flex-col min-h-0 pb-16 md:pb-0 w-full'>{children}</main>
         </SidebarInset>
       </SidebarProvider>
       <BottomNav />
