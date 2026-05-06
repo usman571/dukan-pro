@@ -204,30 +204,242 @@ interface SignUpFormValues {
 - Identifier field accepts **email OR phone number** — user can sign in with either
 - NextAuth `authorize()` calls `getDbUserByIdentifier()` which resolves by email or phone
 
-## Feature API Pattern (Mandatory for every feature)
+## Feature File Hierarchy (Mandatory — mirrors src/features/inventory/)
+
+Every feature MUST follow this exact structure:
+
 ```
-src/features/<name>/api/
-  types.ts    ← define first, everything depends on this
-  service.ts  ← ONLY file to change when connecting real backend
-  queries.ts  ← query key factory + queryOptions
+src/features/<name>/
+  api/
+    types.ts          ← define first; InventoryFilters uses page/limit/search/categories
+    service.ts        ← returns { items: T[], total: number } — ONLY file to swap for real backend
+    queries.ts        ← queryOptions() factory; no staleTime unless required
+    mutations.ts      ← mutationOptions() objects ONLY — never custom hooks
+  schemas/
+    <name>.ts         ← zod schema + FormValues type (number fields use number | undefined)
+  constants/
+    <name>-options.ts ← categoryOptions for form SelectField: { value, label }[]
+  components/
+    <name>-tables/
+      options.tsx     ← CATEGORY_OPTIONS for DataTableFacetedFilter: { value, label }[]
+      columns.tsx     ← ColumnDef[] with DataTableColumnHeader + meta for filterable cols
+      cell-action.tsx ← DropdownMenu + AlertModal for row actions (useMutation spread)
+      index.tsx       ← 'use client': useQueryStates + useSuspenseQuery + useDataTable + DataTable
+    <name>-listing.tsx ← SERVER component: searchParamsCache.get() + prefetchQuery + HydrationBoundary
+    <name>-form.tsx    ← 'use client': Card + CardHeader + CardContent + useFormFields<T>()
+
+src/app/dashboard/<name>/
+  page.tsx            ← async server: searchParamsCache.parse() + dual mobile/desktop layout
+  new/page.tsx        ← PageContainer + <Form /> (default export from features)
+```
+
+Canonical reference: `src/features/inventory/` — use this as the template for every new feature.
+
+## Table Pattern (Mandatory — use DataTable, never raw useReactTable)
+
+```tsx
+// columns.tsx
+export const columns: ColumnDef<Item>[] = [
+  {
+    id: 'name',
+    accessorKey: 'name',
+    header: ({ column }) => <DataTableColumnHeader column={column} title='Name' />,
+    meta: { label: 'Name', placeholder: 'Search...', variant: 'text' },
+    enableColumnFilter: true
+  },
+  {
+    id: 'category',
+    enableSorting: false,
+    meta: { label: 'Category', variant: 'multiSelect', options: CATEGORY_OPTIONS },
+    enableColumnFilter: true
+  },
+  { id: 'actions', cell: ({ row }) => <CellAction data={row.original} /> }
+];
+
+// index.tsx (client component)
+const columnIds = columns.map((c) => c.id).filter(Boolean) as string[];
+
+export function FeatureTable() {
+  const [params] = useQueryStates({
+    page: parseAsInteger.withDefault(1),
+    perPage: parseAsInteger.withDefault(10),
+    name: parseAsString,
+    category: parseAsString,
+    sort: getSortingStateParser(columnIds).withDefault([])
+  });
+
+  const filters = {
+    page: params.page, limit: params.perPage,
+    ...(params.name && { search: params.name }),
+    ...(params.category && { categories: params.category })
+  };
+
+  const { data } = useSuspenseQuery(featureQueryOptions(filters));
+  const pageCount = Math.ceil(data.total / params.perPage);
+
+  const { table } = useDataTable({
+    data: data.items, columns, pageCount,
+    shallow: true, debounceMs: 500,
+    initialState: { columnPinning: { right: ['actions'] } }
+  });
+
+  return <DataTable table={table}><DataTableToolbar table={table} /></DataTable>;
+}
+```
+
+## Mutations Pattern (mutationOptions — never custom hooks)
+
+```ts
+// mutations.ts
+export const addItemMutation = mutationOptions({
+  mutationFn: (data: AddItemInput) => createItem(data),
+  onSuccess: () => getQueryClient().invalidateQueries({ queryKey: featureKeys.all })
+});
+
+export const deleteItemMutation = mutationOptions({
+  mutationFn: (id: number) => deleteItem(id),
+  onSuccess: () => getQueryClient().invalidateQueries({ queryKey: featureKeys.all })
+});
+
+// In components — always spread:
+const mutation = useMutation({ ...addItemMutation, onSuccess: () => { toast.success('...'); } });
+```
+
+## Form Pattern (useFormFields — never raw AppField for standard inputs)
+
+```tsx
+// schema.ts
+export const featureSchema = z.object({
+  name: z.string().min(1),
+  category: z.string().min(1),
+  price: z.number({ message: 'Required' }).positive()
+});
+export type FeatureFormValues = { name: string; category: string; price: number | undefined };
+
+// form.tsx ('use client')
+export default function FeatureForm() {
+  const { FormTextField, FormSelectField } = useFormFields<FeatureFormValues>();
+
+  const form = useAppForm({
+    defaultValues: { name: '', category: '', price: undefined } as FeatureFormValues,
+    validators: { onSubmit: featureSchema },
+    onSubmit: ({ value }) => mutation.mutate(value)
+  });
+
+  return (
+    <Card className='mx-auto w-full'>
+      <CardHeader><CardTitle>Add Item</CardTitle></CardHeader>
+      <CardContent>
+        <form.AppForm>
+          <form.Form className='space-y-6'>
+            <FormTextField name='name' label='Name' required />
+            <FormSelectField name='category' label='Category' required options={categoryOptions} />
+            <FormTextField name='price' label='Price (Rs)' required type='number' />
+            <form.SubmitButton>Save</form.SubmitButton>
+          </form.Form>
+        </form.AppForm>
+      </CardContent>
+    </Card>
+  );
+}
+```
+
+## Server Listing + Page Pattern
+
+```tsx
+// <name>-listing.tsx (server component — no 'use client')
+export default function FeatureListingPage() {
+  const page = searchParamsCache.get('page');
+  const search = searchParamsCache.get('name');
+  const pageLimit = searchParamsCache.get('perPage');
+  const categories = searchParamsCache.get('category');
+
+  const filters = { page, limit: pageLimit, ...(search && { search }), ...(categories && { categories }) };
+  const queryClient = getQueryClient();
+  void queryClient.prefetchQuery(featureQueryOptions(filters));
+
+  return (
+    <HydrationBoundary state={dehydrate(queryClient)}>
+      <FeatureTable />
+    </HydrationBoundary>
+  );
+}
+
+// page.tsx (async server component)
+// IMPORTANT: md:h-full wrapper is required so DataTable's absolute inset-0
+// scroll area gets a real height from the sidebar layout's flex chain.
+export default async function FeaturePage(props: { searchParams: Promise<SearchParams> }) {
+  const searchParams = await props.searchParams;
+  searchParamsCache.parse(searchParams);
+
+  return (
+    <div className='md:flex md:h-full md:flex-col'>
+      {/* Mobile: card list with local state */}
+      <div className='md:hidden'>
+        <FeatureMobileView />
+      </div>
+      {/* Desktop: server-driven DataTable — flex-1 passes height to DataTable */}
+      <div className='hidden md:flex md:flex-1 md:flex-col'>
+        <PageContainer pageTitle='...' pageDescription='...' pageHeaderAction={<Link>...</Link>}>
+          <FeatureListingPage />
+        </PageContainer>
+      </div>
+    </div>
+  );
+}
 ```
 
 ## React Query Pattern
+
 ```tsx
-// SERVER (page.tsx):
+// Prefetch (server listing component):
 void queryClient.prefetchQuery(featureQueryOptions(filters)); // void NOT await
 
-return (
-  <HydrationBoundary state={dehydrate(queryClient)}>
-    <Suspense fallback={<Skeleton />}>
-      <FeatureTable filters={filters} />
-    </Suspense>
-  </HydrationBoundary>
-);
-
-// CLIENT component:
+// Client table component:
 const { data } = useSuspenseQuery(featureQueryOptions(filters)); // NOT useQuery
+
+// Mobile view (no SSR, self-fetching):
+const { data, isLoading } = useQuery(featureQueryOptions({ page: 1, limit: 100 }));
 ```
+
+## Starter Kit First — Core Principle
+
+**The starter kit IS the implementation.** When building any Dukaan Pro screen:
+
+1. **Design PDF gives you**: content, labels, field names, order, layout flow, what data to show
+2. **Starter kit gives you**: every component, every pattern, every styling decision
+
+This means: if the design shows a table → use `DataTable`. If it shows a form → use `useFormFields`. If it shows a filter → use `DataTableFacetedFilter`. If it shows a card list → use `Card` + starter kit layout. **Never build a custom implementation of something the starter kit already provides.**
+
+### Starter Kit → Dukaan Pro Mapping
+
+| Design element | Always use |
+|---------------|------------|
+| Any data table | `DataTable` + `useDataTable` + `DataTableToolbar` |
+| Any form | `useFormFields<T>()` + `useAppForm` + `Card` + `CardContent` |
+| Any dropdown/menu | `DropdownMenu` from shadcn |
+| Any category filter (desktop) | `DataTableFacetedFilter` |
+| Any category filter (mobile) | `ToggleGroup` chips |
+| Any modal/confirm | `AlertModal` from `@/components/modal/alert-modal` |
+| Any sheet/drawer | `Sheet` from shadcn |
+| Any page header | `PageContainer` with `pageTitle` + `pageDescription` props |
+| Any icon | `Icons` from `@/components/icons` — never direct tabler imports |
+| Any loading state | `<Button isLoading={isPending}>` or skeleton components |
+| Any server data list | `HydrationBoundary` + `useSuspenseQuery` (desktop table) / `useQuery` (mobile) |
+
+### Reference Examples (src/features/forms/ — DO NOT DELETE)
+The `src/features/forms/` folder contains starter kit form pattern demos. Before building any form, check these for the correct pattern:
+- `sheet-form-demo.tsx` — form inside Sheet
+- `multi-step-product-form.tsx` — multi-step wizard
+- `advanced-form-patterns.tsx` — linked fields, async validation, dynamic rows
+
+## Design Rule
+The design PDF defines **content, order, and flow only** — not which component to use.
+- Table in design → always `DataTable` + `useDataTable` (never raw `useReactTable`)
+- Dropdown in design → always `DropdownMenu` from shadcn
+- Form fields in design → always `FormTextField` / `FormSelectField` via `useFormFields<T>()`
+- Category filter in design → `DataTableFacetedFilter` on desktop, `ToggleGroup` chips on mobile
+- Never replace starter kit components with custom implementations
 
 ## Currency Formatting
 ```typescript
@@ -282,8 +494,8 @@ Scopes: `auth` · `dashboard` · `sales` · `inventory` · `purchases` · `udhaa
 - `shopName` threaded through NextAuth JWT → session (`src/auth.ts`, `src/types/next-auth.d.ts`)
 
 ### Phase 2 — Core Business Features
-4. **Dashboard** (M1 + D2) — KPIs, low-stock alert, recent sales
-5. **Inventory** (M4 + M5 + D4) — Product list, add product, data table
+4. **Dashboard** (M1 + D2) — KPIs, low-stock alert, recent sales ✅
+5. **Inventory** (M4 + M5 + D4) — Product list, add product, data table ✅
 6. **Sales** (M2 + M3 + D3) — Cart, confirmation, POS layout
 7. **Udhaar** (M7 + M8 + D5) — Khaata list, customer detail, dashboard
 
@@ -302,26 +514,33 @@ Scopes: `auth` · `dashboard` · `sales` · `inventory` · `purchases` · `udhaa
 5. **shadcn/ui** — never modify `src/components/ui/` — extend only
 6. **Linting** — `bun run lint` before every commit
 7. **One file per commit** — never `git add .`
-8. **Feature structure** — always `types.ts` → `service.ts` → `queries.ts`
+8. **Feature structure** — always `types.ts` → `service.ts` → `queries.ts` → `mutations.ts` + `schemas/` + `constants/` + `<name>-tables/`
 9. **Prefetch** — `void queryClient.prefetchQuery()` never `await`
-10. **Query hooks** — `useSuspenseQuery` not `useQuery` for prefetched data
+10. **Query hooks** — `useSuspenseQuery` in table client components; `useQuery` in mobile self-fetching views
 11. **Page headers** — always use `PageContainer` props (`pageTitle`, `pageDescription`) — never import `<Heading>` manually
-12. **Forms** — use `useAppForm` from `@/components/ui/tanstack-form` — never `useState` inside `AppField` render props
-13. **Button loading** — use `<Button isLoading={isPending}>` pattern
-14. **Currency** — always `Rs X,XXX` format — never ₨ or PKR
-15. **Mobile-first** — every component must render correctly at 320px
-16. **Data layer** — never import from `@/constants/mock-api*` in components — always go through service layer
-17. **No Sentry** — removed, do not re-add
-18. **No Clerk** — removed, use NextAuth v5 credentials only
-19. **No hardcoded colors** — never use hex values or arbitrary Tailwind brackets (`bg-[#...]`) — always use shadcn semantic tokens: `bg-primary`, `text-primary`, `text-primary-foreground`, `text-destructive`, `bg-background`, `bg-card`, `bg-muted`, `text-muted-foreground`, `border-border`
-20. **English only** — no Urdu strings, no `dir="auto"`, no bilingual copy anywhere in the UI
+12. **Forms** — use `useFormFields<FormValues>()` from `@/components/ui/tanstack-form` + `Card` + `CardContent` wrapper; never raw `AppField` for standard inputs
+13. **Mutations** — always `mutationOptions()` objects in `mutations.ts`; spread with `useMutation({ ...xyzMutation, onSuccess: ... })` in components — never write custom `useXxx` mutation hooks
+14. **Tables** — always `DataTable` + `DataTableToolbar` + `useDataTable` from starter kit; never raw `useReactTable` with manual table markup
+15. **Button loading** — use `<Button isLoading={isPending}>` pattern
+16. **Currency** — always `Rs X,XXX` format — never ₨ or PKR
+17. **Mobile-first** — every component must render correctly at 320px
+18. **Data layer** — never import from `@/constants/mock-api*` in components — always go through service layer
+19. **No Sentry** — removed, do not re-add
+20. **No Clerk** — removed, use NextAuth v5 credentials only
+21. **No hardcoded colors** — never use hex values or arbitrary Tailwind brackets (`bg-[#...]`) — always use shadcn semantic tokens: `bg-primary`, `text-primary`, `text-primary-foreground`, `text-destructive`, `bg-background`, `bg-card`, `bg-muted`, `text-muted-foreground`, `border-border`
+22. **English only** — no Urdu strings, no `dir="auto"`, no bilingual copy anywhere in the UI
+23. **Page layout** — dual mobile/desktop pages must wrap in `<div className='md:flex md:h-full md:flex-col'>` — this gives `DataTable`'s `absolute inset-0` scroll area a real height from the sidebar flex chain
+24. **Design interpretation** — design PDF defines content, order, and flow only; always use the starter kit component (DataTable, FormSelectField, DropdownMenu, etc.) — never build custom replacements
 
 ## DO NOT
 - ❌ Import icons from `@tabler/icons-react` directly
 - ❌ Modify `src/components/ui/` files
 - ❌ Use `any` TypeScript type
 - ❌ Use `await` with prefetchQuery — use `void`
-- ❌ Use `useQuery` where `useSuspenseQuery` should be
+- ❌ Use raw `useReactTable` — always use `useDataTable` hook
+- ❌ Write custom mutation hooks — always use `mutationOptions()` + spread
+- ❌ Use raw `AppField` render props for standard inputs — use `useFormFields<T>()`
+- ❌ Build forms without `Card` + `CardContent` wrapper
 - ❌ Bundle multiple files in one commit
 - ❌ Use `console.log` in production code
 - ❌ Import from `@/constants/mock-api*` in components
@@ -333,3 +552,7 @@ Scopes: `auth` · `dashboard` · `sales` · `inventory` · `purchases` · `udhaa
 - ❌ Use Urdu strings or `dir="auto"` — English only
 - ❌ Use specific personal names in placeholders/examples — use generic names like "Ahmed Khan", "Sara Ali", "Example Shop" instead of "Karim Bhai", "Karim Kiryana Store"
 - ❌ Assume kiryana/grocery context — the app is for any small retail business (mobile phones, clothing, hardware, electronics, etc.)
+- ❌ Wrap `PageContainer` in a plain `hidden md:block` div — use `hidden md:flex md:flex-1 md:flex-col` to preserve the flex height chain
+- ❌ Build a custom component when the starter kit already has one — always check `src/components/ui/`, `src/components/modal/`, and `src/features/forms/` before writing new UI code
+- ❌ Interpret design screens as component specs — designs define WHAT to show (fields, labels, data), not HOW to build it (starter kit defines the how)
+- ❌ Delete or modify `src/features/forms/` — it is the canonical form pattern reference for Dukaan Pro

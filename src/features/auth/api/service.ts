@@ -9,9 +9,9 @@ interface DbUser extends AuthUser {
 const MOCK_DB_USERS: DbUser[] = [
   {
     id: '1',
-    email: 'admin@example.com',
-    name: 'Karim Bhai',
-    shopName: 'Karim Kiryana Store',
+    email: 'owner@example.com',
+    name: 'Ahmed Khan',
+    shopName: 'Example Shop',
     phone: '03001234567',
     city: 'Lahore',
     // bcryptjs hash of "password123"
@@ -26,6 +26,13 @@ function delay(ms: number): Promise<void> {
 
 export async function getDbUserByEmail(email: string): Promise<DbUser | null> {
   return MOCK_DB_USERS.find((u) => u.email === email) ?? null;
+}
+
+export async function getDbUserByIdentifier(identifier: string): Promise<DbUser | null> {
+  const isPhone = /^03\d{9}$/.test(identifier);
+  return (
+    MOCK_DB_USERS.find((u) => (isPhone ? u.phone === identifier : u.email === identifier)) ?? null
+  );
 }
 
 export async function getUserByEmail(email: string): Promise<AuthUser | null> {
@@ -43,7 +50,7 @@ export async function signUp(values: SignUpFormValues): Promise<AuthUser> {
   await delay(800);
   const user: AuthUser = {
     id: `user_${Date.now()}`,
-    email: `${values.ownerName.toLowerCase().replace(/\s+/g, '.')}@dukaan.pk`,
+    email: values.email,
     name: values.ownerName,
     shopName: values.shopName,
     phone: values.phone,

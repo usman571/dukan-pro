@@ -15,6 +15,7 @@ const signUpSchema = z.object({
   shopName: z.string().min(2, 'Shop name must be at least 2 characters'),
   ownerName: z.string().min(2, 'Owner name must be at least 2 characters'),
   phone: z.string().regex(/^03\d{9}$/, 'Format: 03XX XXXXXXX (11 digits)'),
+  email: z.string().email('Enter a valid email address'),
   city: z.string().min(2, 'City must be at least 2 characters'),
   password: z.string().min(6, 'Password must be at least 6 characters')
 });
@@ -27,6 +28,7 @@ export function SignUpView() {
       shopName: '',
       ownerName: '',
       phone: '',
+      email: '',
       city: '',
       password: ''
     } as SignUpFormValues,
@@ -38,7 +40,7 @@ export function SignUpView() {
           `/auth/success?name=${encodeURIComponent(user.name)}&shop=${encodeURIComponent(user.shopName)}`
         );
       } catch {
-        toast.error('Kuch masla hua, dobara try karein.');
+        toast.error('Something went wrong. Please try again.');
       }
     }
   });
@@ -67,7 +69,7 @@ export function SignUpView() {
         </p>
 
         <form.AppForm>
-          <form.Form className='gap-6 p-0'>
+          <form.Form className='gap-6 p-0 space-y-3'>
             <form.AppField name='shopName'>
               {(field) => {
                 const isInvalid = field.state.meta.isTouched && !field.state.meta.isValid;
@@ -79,7 +81,7 @@ export function SignUpView() {
                         id={field.name}
                         type='text'
                         autoComplete='organization'
-                        placeholder='Karim Kiryana Store'
+                        placeholder='Ahmed Electronics'
                         aria-invalid={isInvalid}
                         value={field.state.value}
                         onBlur={field.handleBlur}
@@ -103,7 +105,7 @@ export function SignUpView() {
                         id={field.name}
                         type='text'
                         autoComplete='name'
-                        placeholder='Karim Bhai'
+                        placeholder='Ahmed Khan'
                         aria-invalid={isInvalid}
                         value={field.state.value}
                         onBlur={field.handleBlur}
@@ -134,6 +136,30 @@ export function SignUpView() {
                         onChange={(e) => field.handleChange(e.target.value)}
                       />
                       <p className='text-xs text-muted-foreground'>Format: 03XX XXXXXXX</p>
+                      {isInvalid && <field.FieldError className='text-destructive text-sm' />}
+                    </field.Field>
+                  </field.FieldSet>
+                );
+              }}
+            </form.AppField>
+
+            <form.AppField name='email'>
+              {(field) => {
+                const isInvalid = field.state.meta.isTouched && !field.state.meta.isValid;
+                return (
+                  <field.FieldSet className='gap-2'>
+                    <field.Field>
+                      <field.FieldLabel htmlFor={field.name}>Email</field.FieldLabel>
+                      <Input
+                        id={field.name}
+                        type='email'
+                        autoComplete='email'
+                        placeholder='name@example.com'
+                        aria-invalid={isInvalid}
+                        value={field.state.value}
+                        onBlur={field.handleBlur}
+                        onChange={(e) => field.handleChange(e.target.value)}
+                      />
                       {isInvalid && <field.FieldError className='text-destructive text-sm' />}
                     </field.Field>
                   </field.FieldSet>

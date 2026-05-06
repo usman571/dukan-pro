@@ -58,7 +58,7 @@ export function ResetPasswordView() {
         </p>
 
         <form.AppForm>
-          <form.Form className='gap-6 p-0'>
+          <form.Form className='gap-6 p-0 space-y-3'>
             <form.AppField name='password'>
               {(field) => {
                 const isInvalid = field.state.meta.isTouched && !field.state.meta.isValid;

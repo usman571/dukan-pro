@@ -1,6 +1,7 @@
 # Dukaan Pro
 
-**Shop management PWA for Pakistani kirana store owners.**
+**Shop management PWA for small business owners in Pakistan.**  
+Works for any retail shop — grocery, mobile phones, clothing, hardware, electronics, and more.
 
 Built with Next.js 16, shadcn/ui, TypeScript, and Bun. Uses the default shadcn/ui theme system — swap any theme from [tweakcn.com](https://tweakcn.com/) and the app adapts automatically.
 
@@ -57,7 +58,16 @@ bun run dev
 
 Open [http://localhost:3000](http://localhost:3000).
 
-**Dev credentials:** `admin@example.com` / `password123`
+**Dev credentials (email):** `owner@example.com` / `password123`  
+**Dev credentials (phone):** `03001234567` / `password123`
+
+## Code Conventions
+
+- **Example names**: Use generic names like `Ahmed Khan`, `Sara Ali`, `Example Shop` — not specific names tied to one business type (no "Karim Bhai", no "Kiryana Store").
+- **Business type**: The app is for any small retail business — avoid kiryana-specific language in copy, placeholders, and comments.
+- **Currency**: Always `Rs X,XXX` — never `₨` or `PKR`.
+- **Language**: English only — no Urdu strings anywhere.
+- **Colors**: Only shadcn semantic tokens — never hardcoded hex values.
 
 ## Project Structure
 

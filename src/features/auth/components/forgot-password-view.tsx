@@ -54,7 +54,7 @@ export function ForgotPasswordView() {
         </p>
 
         <form.AppForm>
-          <form.Form className='gap-6 p-0'>
+          <form.Form className='gap-6 space-y-3 p-0'>
             <form.AppField name='email'>
               {(field) => {
                 const isInvalid = field.state.meta.isTouched && !field.state.meta.isValid;

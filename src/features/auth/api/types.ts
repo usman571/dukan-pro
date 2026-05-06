@@ -8,7 +8,7 @@ export interface AuthUser {
 }
 
 export interface SignInFormValues {
-  email: string;
+  identifier: string;
   password: string;
 }
 
@@ -16,6 +16,7 @@ export interface SignUpFormValues {
   shopName: string;
   ownerName: string;
   phone: string;
+  email: string;
   city: string;
   password: string;
 }

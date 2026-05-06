@@ -8,7 +8,7 @@ export const metadata: Metadata = {
 
 export default function SuccessPage() {
   return (
-    <Suspense fallback={<div className='fixed inset-0 bg-[#10B981]' />}>
+    <Suspense fallback={<div className='fixed inset-0 bg-primary' />}>
       <SignupSuccessView />
     </Suspense>
   );
