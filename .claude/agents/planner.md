@@ -6,7 +6,7 @@ description: >
 tools:
   - read_file
   - list_files
-model: claude-sonnet-4-6
+model: claude-opus 
 ---
 
 You are a senior architect for Dukaan Pro — a PWA shop-management app for Pakistani kirana store owners.
