@@ -34,7 +34,7 @@ export default function Header() {
           <Icons.notification className='h-4 w-4' />
         </Button>
         <Button asChild size='sm' className='hidden md:flex'>
-          <Link href='/dashboard/sales/new'>
+          <Link href='/dashboard/sales'>
             <Icons.add className='mr-1.5 h-4 w-4' />
             New sale
           </Link>

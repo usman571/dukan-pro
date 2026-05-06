@@ -27,7 +27,7 @@ export function BottomNav() {
           <Link
             key={tab.href}
             href={tab.href}
-            className='flex min-h-[44px] w-14 flex-col items-center justify-end gap-0.5 pb-1'
+            className='flex min-h-11 w-14 flex-col items-center justify-end gap-0.5 pb-1'
           >
             <Icon className={cn('h-5 w-5', isActive ? 'text-primary' : 'text-muted-foreground')} />
             <span
@@ -44,7 +44,7 @@ export function BottomNav() {
 
       {/* Center FAB */}
       <Link
-        href='/dashboard/sales/new'
+        href='/dashboard/sales'
         className='flex flex-col items-center justify-end pb-1'
         aria-label='New sale'
       >
@@ -60,7 +60,7 @@ export function BottomNav() {
           <Link
             key={tab.href}
             href={tab.href}
-            className='flex min-h-[44px] w-14 flex-col items-center justify-end gap-0.5 pb-1'
+            className='flex min-h-11 w-14 flex-col items-center justify-end gap-0.5 pb-1'
           >
             <Icon className={cn('h-5 w-5', isActive ? 'text-primary' : 'text-muted-foreground')} />
             <span
